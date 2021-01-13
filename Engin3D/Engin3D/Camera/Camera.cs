@@ -8,6 +8,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace Engin3D.Camera
 { 
@@ -20,12 +21,12 @@ namespace Engin3D.Camera
         public Vector3 Position 
         {
             get => new Vector3((float)position[1], (float)position[2], (float)position[0]);
-            set => position = DenseVector.OfArray(new double[] { value.Z, value.X, value.Y, });
-        }
+            set { position = DenseVector.OfArray(new double[] { value.Z, value.X, value.Y, }); CreateViewMatrix(); }
+}
         public Vector3 Target
         {
             get => new Vector3((float)target[1], (float)target[2], (float)target[0]);
-            set => target = DenseVector.OfArray(new double[] { value.Z, value.X, value.Y, });
+            set { target = DenseVector.OfArray(new double[] { value.Z, value.X, value.Y, }); CreateViewMatrix(); }
         }
         public Camera(Vector3 position, Vector3 target, CameraSettings settings)
         {
@@ -76,7 +77,7 @@ namespace Engin3D.Camera
 
         public (double x, double y) Project(Vector3 point, Matrix<double> transformation)
         {
-            Vector<double> newPoint = DenseVector.OfArray(new double[] {point.X,point.Y,point.Z,1});
+            Vector<double> newPoint = DenseVector.OfArray(new double[] {point.Z,point.X,point.Y,1});
             newPoint = projection * view * transformation * newPoint;
             newPoint[0] /= newPoint[3];
             newPoint[1] /= newPoint[3];

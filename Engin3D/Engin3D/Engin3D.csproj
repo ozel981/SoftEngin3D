@@ -54,6 +54,7 @@
     <Compile Include="Camera\Camera.cs" />
     <Compile Include="Camera\CameraSettings.cs" />
     <Compile Include="Device\Device.cs" />
+    <Compile Include="Device\DrawLineBresenhamAlgoritm.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>

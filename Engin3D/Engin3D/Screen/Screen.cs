@@ -14,6 +14,7 @@ namespace Engin3D.Screen
     {
         private Size size;
         private Int32[] Bits;
+        private Device.DrawLineBresenhamAlgoritm LinePainter = new Device.DrawLineBresenhamAlgoritm();
         public Screen(ref PictureBox pictureBox)
         {
             size = pictureBox.Size;
@@ -41,6 +42,33 @@ namespace Engin3D.Screen
                     Bits[index-1] = color.ToArgb();
                 }
             }
+        }
+
+        public void DrawLine((double X, double Y) begin, (double X, double Y) end, Color color)
+        {
+            Point scaledBegin = new Point
+            {
+                X = (int)(begin.X * (size.Width / 2) + size.Width / 2),
+                Y = (int)(-begin.Y * (size.Height / 2) + size.Height / 2)
+            };
+            Point scaledEnd = new Point
+            {
+                X = (int)(end.X * (size.Width / 2) + size.Width / 2),
+                Y = (int)(-end.Y * (size.Height / 2) + size.Height / 2)
+            };
+            LinePainter.Draw(scaledBegin, scaledEnd, (int x, int y) =>
+              {
+                  if (x >= 0 && y >= 0 && x <= size.Width && y <= size.Height)
+                  {
+                      int index = y * size.Width + x;
+                      if (index < Bits.Length)
+                      {
+                          Bits[index] = color.ToArgb();
+                          Bits[index + 1] = color.ToArgb();
+                          Bits[index - 1] = color.ToArgb();
+                      }
+                  }
+              });
         }
     }
 }
