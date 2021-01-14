@@ -10,8 +10,12 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Engin3D.Mesh;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.LinearAlgebra.Double;
+using Xamarin.Forms.PlatformConfiguration;
+using System.IO;
 
 namespace Engin3D
 {
@@ -60,7 +64,7 @@ namespace Engin3D
             block.Position = new Vector3(0, 0, 0);
             block.Rotation = new Vector3(0, 0, 0);
             
-            scene.AddMesh(block);
+            //scene.AddMesh(block);
             camera = new Camera.Camera(new Vector3(0,0,2),new Vector3(0,0,0), settings);
             screen = new Screen.Screen(ref PictureBox);
             Device.Device.Render(scene, camera, screen);
@@ -73,8 +77,8 @@ namespace Engin3D
                 graphics.Clear(Color.White);
 
             }
-            //camera.Position = new Vector3((((TrackBar)sender).Value)/10, 0, 2);
-            //scene.Meshes[0].Rotation = new Vector3((float)(((TrackBar)sender).Value * Math.PI / 180), 0, 0);
+            //scene.Meshes[0].Position = new Vector3(0, 0, ((float)((TrackBar)sender).Value) / 20);
+            scene.Meshes[0].Rotation = new Vector3((float)(((TrackBar)sender).Value * Math.PI / 180), 0, 0);
             Device.Device.Render(scene, camera, screen);
             PictureBox.Refresh();
         }
@@ -93,12 +97,62 @@ namespace Engin3D
                 graphics.Clear(Color.White);
 
             }
-            val++;
-            val %= 360;
-            float angle = (float)(val * Math.PI / 180);
-            scene.Meshes[0].Rotation = new Vector3(angle, angle, 0);
-            Device.Device.Render(scene, camera, screen);
-            PictureBox.Refresh();
+            if(scene.Meshes.Count > 0)
+            {
+
+                val++;
+                val %= 360;
+                float angle = (float)(val * Math.PI / 180);
+                scene.Meshes[0].Rotation = new Vector3(angle, angle, 0);
+                Device.Device.Render(scene, camera, screen);
+                PictureBox.Refresh();
+            }
+        }
+
+        private async void LoadMeshButton_Click(object sender, EventArgs e)
+        {
+            var fileContent = string.Empty;
+            var filePath = string.Empty;
+
+            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            {
+                string path = Application.StartupPath;
+                openFileDialog.InitialDirectory = path.Substring(0, path.Length - 9);
+                openFileDialog.Filter = "all files (*.*)|*.*";
+                openFileDialog.FilterIndex = 2;
+                openFileDialog.RestoreDirectory = true;
+
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    using (FileStream openStream = File.OpenRead(openFileDialog.FileName))
+                    {
+                        MeshesCollection meshesCollection = await JsonSerializer.DeserializeAsync<MeshesCollection>(openStream);
+                        AddMeshes(meshesCollection.meshes);
+                    }
+                }
+            }
+        }
+
+        private void AddMeshes(MeshData[] meshes)
+        {
+            foreach(MeshData mesh in meshes)
+            {
+                List<Vector3> vectors = new List<Vector3>();
+                for(int i=2;i<mesh.positions.Length;i+=3)
+                {
+                    vectors.Add(new Vector3((float)mesh.positions[i-2], (float)mesh.positions[i -1], (float)mesh.positions[i]));
+                }
+                List<Face> faces = new List<Face>();
+                for (int i = 0; i < mesh.indices.Length; i += 3)
+                {
+                    faces.Add(new Face { A = mesh.indices[i], B = mesh.indices[i + 1], C = mesh.indices[i + 2] });
+                }
+                Mesh.Mesh newMesh = new Mesh.Mesh("monkey", vectors.ToArray(), faces.ToArray());
+                newMesh.Rotation = new Vector3(0, 0, 0);
+                scene.AddMesh(newMesh);
+                Device.Device.Render(scene, camera, screen);
+                PictureBox.Refresh();
+            }
         }
     }
 }

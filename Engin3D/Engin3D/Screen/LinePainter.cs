@@ -5,12 +5,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Engin3D.Device
+namespace Engin3D.Screen
 {
-    delegate void PutPixel(int x, int y);
-    class DrawLineBresenhamAlgoritm
+    public delegate void PutPixel(Point point);
+    public interface LinePainter
     {
-        public void Draw(Point first, Point second, PutPixel DrawPoint)
+        void Paint(Point first, Point second, PutPixel DrawPoint);
+    }
+    public class LinePainterBresenhamAlgoritm : LinePainter
+    {
+        public void Paint(Point first, Point second, PutPixel DrawPoint)
         {
             if (Math.Abs(first.X - second.X) < 2 && Math.Abs(first.Y - second.Y) < 2)
             {
@@ -90,14 +94,14 @@ namespace Engin3D.Device
                 }
                 if (Math.Abs(first.X - second.X) < Math.Abs(first.Y - second.Y))
                 {
-                    DrawPoint(yf, xf);
-                    DrawPoint(yb, xb);
+                    DrawPoint(new Point(yf, xf));
+                    DrawPoint(new Point(yb, xb));
                 }
                 else
                 {
 
-                    DrawPoint(xf, yf);
-                    DrawPoint(xb, yb);
+                    DrawPoint(new Point(xf, yf));
+                    DrawPoint(new Point(xb, yb));
                 }
             }
 

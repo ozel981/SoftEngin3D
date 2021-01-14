@@ -26,6 +26,8 @@ namespace Engin3D.Mesh
             Vertices = (Vector3[])vertices.Clone();
             Faces = (Face[])faces.Clone();
             Name = name;
+            Position = new Vector3(0, 0, 0);
+            Rotation = new Vector3(0, 0, 0);
         }
     }
 }

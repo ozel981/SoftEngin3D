@@ -14,8 +14,8 @@ namespace Engin3D.Camera
 { 
     class Camera
     {
-        private Vector<double> position { get; set; }
-        private Vector<double> target { get; set; }
+        private MathNet.Numerics.LinearAlgebra.Vector<double> position { get; set; }
+        private MathNet.Numerics.LinearAlgebra.Vector<double> target { get; set; }
         private Matrix<double> projection;
         private Matrix<double> view;
         public Vector3 Position 
@@ -53,10 +53,10 @@ namespace Engin3D.Camera
 
         private void CreateViewMatrix()
         {
-            Vector<double> UpVector = DenseVector.OfArray(new double[] { 0, 0, 1 });
-            Vector<double> zAxis = (position - target).Normalize(1);
-            Vector<double> xAxis = Cross3(UpVector, zAxis).Normalize(1);
-            Vector<double> yAxis = Cross3(zAxis, xAxis);
+            MathNet.Numerics.LinearAlgebra.Vector<double> UpVector = DenseVector.OfArray(new double[] { 0, 0, 1 });
+            MathNet.Numerics.LinearAlgebra.Vector<double> zAxis = (position - target).Normalize(1);
+            MathNet.Numerics.LinearAlgebra.Vector<double> xAxis = Cross3(UpVector, zAxis).Normalize(1);
+            MathNet.Numerics.LinearAlgebra.Vector<double> yAxis = Cross3(zAxis, xAxis);
             view = DenseMatrix.OfArray(new double[,]
             {
                 {xAxis[0],yAxis[0],zAxis[0],0},
@@ -67,23 +67,66 @@ namespace Engin3D.Camera
             view = view.Transpose();
         }
 
-        private Vector<double> Cross3(Vector<double> v1, Vector<double> v2)
+        private MathNet.Numerics.LinearAlgebra.Vector<double> Cross3(
+            MathNet.Numerics.LinearAlgebra.Vector<double> v1, 
+            MathNet.Numerics.LinearAlgebra.Vector<double> v2)
         {
             double x = v1[1] * v2[2] - v1[2] * v2[1];
             double y = v1[0] * v2[2] + v1[2] * v2[0];
             double z = v1[0] * v2[1] - v1[1] * v2[0];
             return DenseVector.OfArray(new double[] { x, y, z });
         }
-
-        public (double x, double y) Project(Vector3 point, Matrix<double> transformation)
+        
+        public List<(double x, double y, double z)> Project(Mesh.Mesh mesh)
         {
-            Vector<double> newPoint = DenseVector.OfArray(new double[] {point.Z,point.X,point.Y,1});
-            newPoint = projection * view * transformation * newPoint;
-            newPoint[0] /= newPoint[3];
-            newPoint[1] /= newPoint[3];
-            newPoint[2] /= newPoint[3];
-            newPoint[3] /= newPoint[3];
-            return (newPoint[0], newPoint[1]);
+            List<(double x, double y, double z)> points = new List<(double x, double y, double z)>();
+            Matrix<double> translation = CreateTranslationMatrix(mesh.Position);
+            Matrix<double> rotation = CreateRotationMatrix(mesh.Rotation);
+            Matrix<double> transformation = projection * view * translation * rotation;
+            foreach(Vector3 point in mesh.Vertices)
+            {
+                MathNet.Numerics.LinearAlgebra.Vector<double> newPoint = DenseVector.OfArray(new double[] 
+                { point.Z, point.X, point.Y, 1 });
+                newPoint = transformation * newPoint;
+                newPoint[0] /= newPoint[3];
+                newPoint[1] /= newPoint[3];
+                newPoint[2] /= newPoint[3];
+                newPoint[3] /= newPoint[3];
+                points.Add((newPoint[0], newPoint[1], newPoint[2]));
+            }
+            return points;
+        }
+        private Matrix<double> CreateTranslationMatrix(Vector3 position)
+        {
+            Matrix<double> translationMatrix = DenseMatrix.OfArray(new double[,]{
+                         {1,0,0,position.Z},
+                         {0,1,0,position.X},
+                         {0,0,1,position.Y},
+                         {0,0,0,1}
+                        });
+
+            return translationMatrix;
+        }
+        private Matrix<double> CreateRotationMatrix(Vector3 rotation)
+        {
+            double x00 = Math.Cos(rotation.X) * Math.Cos(rotation.Y);
+            double x01 = Math.Cos(rotation.X) * Math.Sin(rotation.Y) * Math.Sin(rotation.Z) - Math.Sin(rotation.X) * Math.Cos(rotation.Z);
+            double x02 = Math.Cos(rotation.X) * Math.Sin(rotation.Y) * Math.Cos(rotation.Z) + Math.Sin(rotation.X) * Math.Sin(rotation.Z);
+            double x10 = Math.Sin(rotation.X) * Math.Cos(rotation.Y);
+            double x11 = Math.Sin(rotation.X) * Math.Sin(rotation.Y) * Math.Sin(rotation.Z) + Math.Cos(rotation.X) * Math.Cos(rotation.Z);
+            double x12 = Math.Sin(rotation.X) * Math.Sin(rotation.Y) * Math.Cos(rotation.Z) - Math.Cos(rotation.X) * Math.Sin(rotation.Z);
+            double x20 = -Math.Sin(rotation.Y);
+            double x21 = Math.Cos(rotation.Y) * Math.Sin(rotation.Z);
+            double x22 = Math.Cos(rotation.Y) * Math.Cos(rotation.Z);
+
+            Matrix<double> rotationMatrix = DenseMatrix.OfArray(new double[,]{
+                         {x00,x01,x02,0},
+                         {x10,x11,x12,0},
+                         {x20,x21,x22,0},
+                         {0,0,0,1}
+                        });
+
+            return rotationMatrix;
         }
     }
 } 
