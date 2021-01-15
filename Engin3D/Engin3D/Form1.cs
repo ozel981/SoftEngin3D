@@ -150,6 +150,7 @@ namespace Engin3D
                 }
                 Mesh.Mesh newMesh = new Mesh.Mesh("monkey", vectors.ToArray(), faces.ToArray());
                 newMesh.Rotation = new Vector3(0, 0, 0);
+                newMesh.Position = new Vector3(0, 0, 0);
                 scene.Meshes.Clear();
                 scene.AddMesh(newMesh);
                 Device.Device.Render(scene, camera, screen);

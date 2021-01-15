@@ -89,7 +89,7 @@ namespace Engin3D.Screen
                 (vertices[1],vertices[2]),
                 (vertices[2],vertices[0])
             };
-            PolygonFiller.Paint(edges, (int rowNr, int fromX, int toX) =>
+            (new BucketSortScanLineFillAlgorithm()).Paint(edges, (int rowNr, int fromX, int toX) =>
              {
                  for(int i= fromX; i<= toX; i++)
                  {
@@ -125,7 +125,7 @@ namespace Engin3D.Screen
                     {
                         Bits[index] = color.ToArgb();
                         ZBuffor[index] = z;
-                    } 
+                    }
                 }
             }
         }
