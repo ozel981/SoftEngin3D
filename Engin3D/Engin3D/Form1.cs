@@ -58,13 +58,13 @@ namespace Engin3D
                 new Face {A = 7, B = 2, C = 3},
                 new Face {A = 7, B = 2, C = 6},
                 new Face {A = 0, B = 5, C = 4},
-                new Face {A = 0, B = 0, C = 1}
+                new Face {A = 0, B = 5, C = 1}
             };
             Mesh.Mesh block = new Mesh.Mesh("block", vertices, faces);
             block.Position = new Vector3(0, 0, 0);
             block.Rotation = new Vector3(0, 0, 0);
             
-            //scene.AddMesh(block);
+            scene.AddMesh(block);
             camera = new Camera.Camera(new Vector3(0,0,2),new Vector3(0,0,0), settings);
             screen = new Screen.Screen(ref PictureBox);
             Device.Device.Render(scene, camera, screen);
@@ -78,7 +78,7 @@ namespace Engin3D
 
             }
             //scene.Meshes[0].Position = new Vector3(0, 0, ((float)((TrackBar)sender).Value) / 20);
-            scene.Meshes[0].Rotation = new Vector3((float)(((TrackBar)sender).Value * Math.PI / 180), 0, 0);
+            scene.Meshes[0].Rotation = new Vector3(scene.Meshes[0].Rotation.X, (float)(((TrackBar)sender).Value * Math.PI / 180), scene.Meshes[0].Rotation.Z);
             Device.Device.Render(scene, camera, screen);
             PictureBox.Refresh();
         }
@@ -127,6 +127,7 @@ namespace Engin3D
                     using (FileStream openStream = File.OpenRead(openFileDialog.FileName))
                     {
                         MeshesCollection meshesCollection = await JsonSerializer.DeserializeAsync<MeshesCollection>(openStream);
+                        
                         AddMeshes(meshesCollection.meshes);
                     }
                 }
@@ -149,10 +150,37 @@ namespace Engin3D
                 }
                 Mesh.Mesh newMesh = new Mesh.Mesh("monkey", vectors.ToArray(), faces.ToArray());
                 newMesh.Rotation = new Vector3(0, 0, 0);
+                scene.Meshes.Clear();
                 scene.AddMesh(newMesh);
                 Device.Device.Render(scene, camera, screen);
                 PictureBox.Refresh();
             }
+        }
+
+        private void trackBar3_Scroll(object sender, EventArgs e)
+        {
+            using (Graphics graphics = Graphics.FromImage(PictureBox.Image))
+            {
+                graphics.Clear(Color.White);
+
+            }
+            //scene.Meshes[0].Position = new Vector3(0, 0, ((float)((TrackBar)sender).Value) / 20);
+            scene.Meshes[0].Rotation = new Vector3((float)(((TrackBar)sender).Value * Math.PI / 180), scene.Meshes[0].Rotation.Y, scene.Meshes[0].Rotation.Z);
+            Device.Device.Render(scene, camera, screen);
+            PictureBox.Refresh();
+        }
+
+        private void trackBar2_Scroll(object sender, EventArgs e)
+        {
+            using (Graphics graphics = Graphics.FromImage(PictureBox.Image))
+            {
+                graphics.Clear(Color.White);
+
+            }
+            //scene.Meshes[0].Position = new Vector3(0, 0, ((float)((TrackBar)sender).Value) / 20);
+            scene.Meshes[0].Rotation = new Vector3(scene.Meshes[0].Rotation.X, scene.Meshes[0].Rotation.Y, (float)(((TrackBar)sender).Value * Math.PI / 180));
+            Device.Device.Render(scene, camera, screen);
+            PictureBox.Refresh();
         }
     }
 }

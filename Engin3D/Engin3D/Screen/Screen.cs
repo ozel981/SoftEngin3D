@@ -125,11 +125,7 @@ namespace Engin3D.Screen
                     {
                         Bits[index] = color.ToArgb();
                         ZBuffor[index] = z;
-                    }    
-                    else
-                    {
-
-                    }
+                    } 
                 }
             }
         }

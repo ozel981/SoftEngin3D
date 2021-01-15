@@ -85,7 +85,7 @@ namespace Engin3D.Camera
             Matrix<double> transformation = projection * view * translation * rotation;
             foreach(Vector3 point in mesh.Vertices)
             {
-                MathNet.Numerics.LinearAlgebra.Vector<double> newPoint = DenseVector.OfArray(new double[] 
+                MathNet.Numerics.LinearAlgebra.Vector<double> newPoint = DenseVector.OfArray(new double[]
                 { point.Z, point.X, point.Y, 1 });
                 newPoint = transformation * newPoint;
                 newPoint[0] /= newPoint[3];
@@ -94,7 +94,7 @@ namespace Engin3D.Camera
                 newPoint[3] /= newPoint[3];
                 points.Add((newPoint[0], newPoint[1], newPoint[2]));
             }
-            return points;
+            return points.ToList();
         }
         private Matrix<double> CreateTranslationMatrix(Vector3 position)
         {

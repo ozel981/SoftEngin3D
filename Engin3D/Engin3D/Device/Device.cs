@@ -1,17 +1,6 @@
-﻿using System;
+﻿using Engin3D.Mesh;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Engin3D.Scene;
-using Engin3D.Screen;
-using Engin3D.Camera;
 using System.Drawing;
-using System.Numerics;
-using MathNet.Numerics.LinearAlgebra;
-using MathNet.Numerics.LinearAlgebra.Double;
-using System.Windows.Forms;
-using Engin3D.Mesh;
 
 namespace Engin3D.Device
 {
