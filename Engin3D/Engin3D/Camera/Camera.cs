@@ -1,4 +1,6 @@
 ﻿
+using Engin3D.Device;
+using Engin3D.Mesh;
 using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.LinearAlgebra.Double;
 using System;
@@ -18,17 +20,17 @@ namespace Engin3D.Camera
         private MathNet.Numerics.LinearAlgebra.Vector<double> target { get; set; }
         private Matrix<double> projection;
         private Matrix<double> view;
-        public Vector3 Position 
+        public Vector3D Position 
         {
-            get => new Vector3((float)position[1], (float)position[2], (float)position[0]);
+            get => new Vector3D((float)position[1], (float)position[2], (float)position[0]);
             set { position = DenseVector.OfArray(new double[] { value.Z, value.X, value.Y, }); CreateViewMatrix(); }
 }
-        public Vector3 Target
+        public Vector3D Target
         {
-            get => new Vector3((float)target[1], (float)target[2], (float)target[0]);
+            get => new Vector3D((float)target[1], (float)target[2], (float)target[0]);
             set { target = DenseVector.OfArray(new double[] { value.Z, value.X, value.Y, }); CreateViewMatrix(); }
         }
-        public Camera(Vector3 position, Vector3 target, CameraSettings settings)
+        public Camera(Vector3D position, Vector3D target, CameraSettings settings)
         {
             this.position = DenseVector.OfArray(new double[] { position.Z, position.X, position.Y, });
             this.target = DenseVector.OfArray(new double[] { target.Z, target.X, target.Y,  });
@@ -77,26 +79,38 @@ namespace Engin3D.Camera
             return DenseVector.OfArray(new double[] { x, y, z });
         }
         
-        public List<(double x, double y, double z)> Project(Mesh.Mesh mesh)
+        public List<Vertex> Project(Mesh.Mesh mesh)
         {
-            List<(double x, double y, double z)> points = new List<(double x, double y, double z)>();
+            List<Vertex> points = new List<Vertex>();
             Matrix<double> translation = CreateTranslationMatrix(mesh.Position);
             Matrix<double> rotation = CreateRotationMatrix(mesh.Rotation);
-            Matrix<double> transformation = projection * view * translation * rotation;
-            foreach(Vector3 point in mesh.Vertices)
+            Matrix<double> worldTransformation = translation * rotation;
+            Matrix<double> transformation = projection * view * worldTransformation;
+            foreach(Vertex vertex in mesh.Vertices)
             {
-                MathNet.Numerics.LinearAlgebra.Vector<double> newPoint = DenseVector.OfArray(new double[]
-                { point.Z, point.X, point.Y, 1 });
-                newPoint = transformation * newPoint;
-                newPoint[0] /= newPoint[3];
-                newPoint[1] /= newPoint[3];
-                newPoint[2] /= newPoint[3];
-                newPoint[3] /= newPoint[3];
-                points.Add((newPoint[0], newPoint[1], newPoint[2]));
+                points.Add(
+                    new Vertex
+                    {
+                        Coordinates = Transform(vertex.Coordinates, transformation),
+                        Normal = Transform(vertex.Normal, worldTransformation),
+                        WorldCoordinates = Transform(vertex.Coordinates, worldTransformation),
+                    });
             }
-            return points.ToList();
+            return points;
         }
-        private Matrix<double> CreateTranslationMatrix(Vector3 position)
+
+        private Vector3D Transform(Vector3D vector, Matrix<double> transformation)
+        {
+            MathNet.Numerics.LinearAlgebra.Vector<double> newVector = DenseVector.OfArray(new double[]
+                { vector.Z, vector.X, vector.Y, 1 });
+            newVector = transformation * newVector;
+            newVector[0] /= newVector[3];
+            newVector[1] /= newVector[3];
+            newVector[2] /= newVector[3];
+            newVector[3] /= newVector[3];
+            return new Vector3D(newVector[0], newVector[1], newVector[2]);
+        }
+        private Matrix<double> CreateTranslationMatrix(Vector3D position)
         {
             Matrix<double> translationMatrix = DenseMatrix.OfArray(new double[,]{
                          {1,0,0,position.Z},
@@ -107,7 +121,7 @@ namespace Engin3D.Camera
 
             return translationMatrix;
         }
-        private Matrix<double> CreateRotationMatrix(Vector3 rotation)
+        private Matrix<double> CreateRotationMatrix(Vector3D rotation)
         {
             double x00 = Math.Cos(rotation.X) * Math.Cos(rotation.Y);
             double x01 = Math.Cos(rotation.X) * Math.Sin(rotation.Y) * Math.Sin(rotation.Z) - Math.Sin(rotation.X) * Math.Cos(rotation.Z);

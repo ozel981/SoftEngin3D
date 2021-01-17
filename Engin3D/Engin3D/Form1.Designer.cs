@@ -36,6 +36,7 @@
             this.LoadMeshButton = new System.Windows.Forms.Button();
             this.trackBar3 = new System.Windows.Forms.TrackBar();
             this.trackBar2 = new System.Windows.Forms.TrackBar();
+            this.button2 = new System.Windows.Forms.Button();
             this.Timer = new System.Windows.Forms.Timer(this.components);
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.PictureBox)).BeginInit();
@@ -79,6 +80,7 @@
             this.tableLayoutPanel2.Controls.Add(this.LoadMeshButton, 0, 2);
             this.tableLayoutPanel2.Controls.Add(this.trackBar3, 0, 1);
             this.tableLayoutPanel2.Controls.Add(this.trackBar2, 0, 3);
+            this.tableLayoutPanel2.Controls.Add(this.button2, 0, 4);
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel2.Location = new System.Drawing.Point(603, 3);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
@@ -135,10 +137,20 @@
             this.trackBar2.TabIndex = 4;
             this.trackBar2.Scroll += new System.EventHandler(this.trackBar2_Scroll);
             // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(3, 203);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(75, 23);
+            this.button2.TabIndex = 5;
+            this.button2.Text = "button2";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
             // Timer
             // 
             this.Timer.Enabled = true;
-            this.Timer.Interval = 40;
+            this.Timer.Interval = 10;
             this.Timer.Tick += new System.EventHandler(this.Timer_Tick);
             // 
             // Form1
@@ -170,6 +182,7 @@
         private System.Windows.Forms.Button LoadMeshButton;
         private System.Windows.Forms.TrackBar trackBar3;
         private System.Windows.Forms.TrackBar trackBar2;
+        private System.Windows.Forms.Button button2;
     }
 }
 

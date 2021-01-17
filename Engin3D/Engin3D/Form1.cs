@@ -34,16 +34,16 @@ namespace Engin3D
                 NearVerge = 1,
                 AspectRatio = (double)PictureBox.Height / (double)PictureBox.Width
             };
-            Vector3[] vertices = new Vector3[]
+            Vertex[] vertices = new Vertex[]
             {
-                new Vector3(-0.5f,-0.5f,-0.5f),
-                new Vector3(0.5f,-0.5f,-0.5f),
-                new Vector3(0.5f,0.5f,-0.5f),
-                new Vector3(-0.5f,0.5f,-0.5f),
-                new Vector3(-0.5f,-0.5f,0.5f),
-                new Vector3(0.5f,-0.5f,0.5f),
-                new Vector3(0.5f,0.5f,0.5f),
-                new Vector3(-0.5f,0.5f,0.5f),
+                new Vertex { Coordinates = new Vector3D(-0.5f,-0.5f,-0.5f), Normal = new Vector3D(-0.5f,-0.5f,-0.5f)},
+                new Vertex { Coordinates = new Vector3D(0.5f,-0.5f,-0.5f), Normal = new Vector3D(0.5f,-0.5f,-0.5f) },
+                new Vertex { Coordinates = new Vector3D(0.5f,0.5f,-0.5f), Normal = new Vector3D(0.5f,0.5f,-0.5f) },
+                new Vertex { Coordinates = new Vector3D(-0.5f,0.5f,-0.5f), Normal = new Vector3D(-0.5f,0.5f,-0.5f) },
+                new Vertex { Coordinates = new Vector3D(-0.5f,-0.5f,0.5f), Normal = new Vector3D(-0.5f,-0.5f,0.5f) },
+                new Vertex { Coordinates = new Vector3D(0.5f,-0.5f,0.5f), Normal = new Vector3D(0.5f,-0.5f,0.5f) },
+                new Vertex { Coordinates = new Vector3D(0.5f,0.5f,0.5f), Normal = new Vector3D(0.5f,0.5f,0.5f) },
+                new Vertex { Coordinates = new Vector3D(-0.5f,0.5f,0.5f), Normal = new Vector3D(-0.5f,0.5f,0.5f) },
             };
             Face[] faces = new Face[]
             {
@@ -61,11 +61,29 @@ namespace Engin3D
                 new Face {A = 0, B = 5, C = 1}
             };
             Mesh.Mesh block = new Mesh.Mesh("block", vertices, faces);
-            block.Position = new Vector3(0, 0, 0);
-            block.Rotation = new Vector3(0, 0, 0);
+            block.Position = new Vector3D(0, 0, 0);
+            block.Rotation = new Vector3D(0, 0, 0);
             
-            scene.AddMesh(block);
-            camera = new Camera.Camera(new Vector3(0,0,2),new Vector3(0,0,0), settings);
+            scene.AddMesh(new Mesh.Mesh("block", vertices, faces));
+            scene.AddMesh(new Mesh.Mesh("block", vertices, faces));
+            scene.AddMesh(new Mesh.Mesh("block", vertices, faces));
+            scene.AddMesh(new Mesh.Mesh("block", vertices, faces));
+            scene.AddMesh(new Mesh.Mesh("block", vertices, faces));
+            scene.AddMesh(new Mesh.Mesh("block", vertices, faces));
+            scene.AddMesh(new Mesh.Mesh("block", vertices, faces));
+            scene.AddMesh(new Mesh.Mesh("block", vertices, faces));
+            scene.AddMesh(new Mesh.Mesh("block", vertices, faces));
+            scene.AddMesh(new Mesh.Mesh("block", vertices, faces));
+            scene.AddMesh(new Mesh.Mesh("block", vertices, faces));
+            scene.AddMesh(new Mesh.Mesh("block", vertices, faces));
+            scene.AddMesh(new Mesh.Mesh("block", vertices, faces));
+            scene.AddMesh(new Mesh.Mesh("block", vertices, faces));
+            scene.AddMesh(new Mesh.Mesh("block", vertices, faces));
+            scene.AddMesh(new Mesh.Mesh("block", vertices, faces));
+            scene.AddMesh(new Mesh.Mesh("block", vertices, faces));
+            scene.AddMesh(new Mesh.Mesh("block", vertices, faces));
+            scene.AddMesh(new Mesh.Mesh("block", vertices, faces));
+            camera = new Camera.Camera(new Vector3D(0,0,2),new Vector3D(0,0,0), settings);
             screen = new Screen.Screen(ref PictureBox);
             Device.Device.Render(scene, camera, screen);
         }
@@ -77,8 +95,8 @@ namespace Engin3D
                 graphics.Clear(Color.White);
 
             }
-            //scene.Meshes[0].Position = new Vector3(0, 0, ((float)((TrackBar)sender).Value) / 20);
-            scene.Meshes[0].Rotation = new Vector3(scene.Meshes[0].Rotation.X, (float)(((TrackBar)sender).Value * Math.PI / 180), scene.Meshes[0].Rotation.Z);
+            //scene.Meshes[0].Position = new Vector3D(0, 0, ((float)((TrackBar)sender).Value) / 20);
+            scene.Meshes[0].Rotation = new Vector3D(scene.Meshes[0].Rotation.X, (((TrackBar)sender).Value * Math.PI / 180), scene.Meshes[0].Rotation.Z);
             Device.Device.Render(scene, camera, screen);
             PictureBox.Refresh();
         }
@@ -89,6 +107,8 @@ namespace Engin3D
         }
 
         int val = 0;
+
+        DateTime timeNow = DateTime.Now;
 
         private void Timer_Tick(object sender, EventArgs e)
         {
@@ -103,10 +123,14 @@ namespace Engin3D
                 val++;
                 val %= 360;
                 float angle = (float)(val * Math.PI / 180);
-                scene.Meshes[0].Rotation = new Vector3(angle, angle, 0);
+                scene.Meshes[0].Rotation = new Vector3D(angle, angle, 0);
+                timeNow = DateTime.Now;
                 Device.Device.Render(scene, camera, screen);
+                TimeSpan timeItTook = DateTime.Now - timeNow;
+                this.Text = $"RealEngine3D | FPS:[{1000 / timeItTook.Milliseconds}]";
                 PictureBox.Refresh();
-            }
+            };
+            
         }
 
         private async void LoadMeshButton_Click(object sender, EventArgs e)
@@ -138,10 +162,14 @@ namespace Engin3D
         {
             foreach(MeshData mesh in meshes)
             {
-                List<Vector3> vectors = new List<Vector3>();
+                List<Vertex> vectors = new List<Vertex>();
                 for(int i=2;i<mesh.positions.Length;i+=3)
                 {
-                    vectors.Add(new Vector3((float)mesh.positions[i-2], (float)mesh.positions[i -1], (float)mesh.positions[i]));
+                    vectors.Add(
+                        new Vertex{
+                            Coordinates = new Vector3D((float)mesh.positions[i-2], (float)mesh.positions[i -1], (float)mesh.positions[i]),
+                            Normal = new Vector3D((float)mesh.normals[i - 2], (float)mesh.normals[i - 1], (float)mesh.normals[i])
+                        });
                 }
                 List<Face> faces = new List<Face>();
                 for (int i = 0; i < mesh.indices.Length; i += 3)
@@ -149,8 +177,8 @@ namespace Engin3D
                     faces.Add(new Face { A = mesh.indices[i], B = mesh.indices[i + 1], C = mesh.indices[i + 2] });
                 }
                 Mesh.Mesh newMesh = new Mesh.Mesh("monkey", vectors.ToArray(), faces.ToArray());
-                newMesh.Rotation = new Vector3(0, 0, 0);
-                newMesh.Position = new Vector3(0, 0, 0);
+                newMesh.Rotation = new Vector3D(0, 0, 0);
+                newMesh.Position = new Vector3D(0, 0, 0);
                 scene.Meshes.Clear();
                 scene.AddMesh(newMesh);
                 Device.Device.Render(scene, camera, screen);
@@ -165,8 +193,8 @@ namespace Engin3D
                 graphics.Clear(Color.White);
 
             }
-            //scene.Meshes[0].Position = new Vector3(0, 0, ((float)((TrackBar)sender).Value) / 20);
-            scene.Meshes[0].Rotation = new Vector3((float)(((TrackBar)sender).Value * Math.PI / 180), scene.Meshes[0].Rotation.Y, scene.Meshes[0].Rotation.Z);
+            //scene.Meshes[0].Position = new Vector3D(0, 0, ((float)((TrackBar)sender).Value) / 20);
+            scene.Meshes[0].Rotation = new Vector3D((float)(((TrackBar)sender).Value * Math.PI / 180), scene.Meshes[0].Rotation.Y, scene.Meshes[0].Rotation.Z);
             Device.Device.Render(scene, camera, screen);
             PictureBox.Refresh();
         }
@@ -178,10 +206,15 @@ namespace Engin3D
                 graphics.Clear(Color.White);
 
             }
-            //scene.Meshes[0].Position = new Vector3(0, 0, ((float)((TrackBar)sender).Value) / 20);
-            scene.Meshes[0].Rotation = new Vector3(scene.Meshes[0].Rotation.X, scene.Meshes[0].Rotation.Y, (float)(((TrackBar)sender).Value * Math.PI / 180));
+            //scene.Meshes[0].Position = new Vector3D(0, 0, ((float)((TrackBar)sender).Value) / 20);
+            scene.Meshes[0].Rotation = new Vector3D(scene.Meshes[0].Rotation.X, scene.Meshes[0].Rotation.Y, (float)(((TrackBar)sender).Value * Math.PI / 180));
             Device.Device.Render(scene, camera, screen);
             PictureBox.Refresh();
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            Timer.Enabled = !Timer.Enabled;
         }
     }
 }

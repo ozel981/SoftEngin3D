@@ -19,6 +19,8 @@ namespace Engin3D
         public double[] rotation { get; set; }
         //public double[] scaling { get; set; }
         public double[] positions { get; set; }
+        public double[] normals { get; set; }
+        public double[] uvs { get; set; }
         public int[] indices { get; set; }
         public MeshInfo[] subMeshes { get; set; }
     }

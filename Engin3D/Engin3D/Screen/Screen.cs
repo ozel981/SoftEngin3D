@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Engin3D.Device;
+using Engin3D.Mesh;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -10,22 +12,6 @@ using System.Windows.Forms;
 
 namespace Engin3D.Screen
 {
-    public struct Point3
-    {
-        public double X { get; set; }
-        public double Y { get; set; }
-        public double Z { get; set; }
-
-        public static implicit operator Point3((double x, double y, double z) point)
-        {
-            return new Point3 { X = point.x, Y = point.y, Z = point.z };
-        }
-
-        public static implicit operator (double x, double y, double z)(Point3 point)
-        {
-            return (point.X, point.Y, point.Z);
-        }
-    }
     public class Screen
     {
         private Size size;
@@ -47,13 +33,13 @@ namespace Engin3D.Screen
             pictureBox.Image = bitmap;
         }
 
-        public void PutPixel(Point3 point, Color color)
+        public void PutPixel(Vector3D point, Color color)
         {
             Point scaledPoint = TransformPoint(point);
             SetPixel(scaledPoint, 0,  color);
         }
 
-        public void DrawLine(Point3 begin, Point3 end, Color color)
+        public void DrawLine(Vector3D begin, Vector3D end, Color color)
         {
             Point scaledBegin = TransformPoint(begin);
             Point scaledEnd = TransformPoint(end);
@@ -79,25 +65,64 @@ namespace Engin3D.Screen
             }
         }
 
-        public void FillTriangle(Point3 a, Point3 b, Point3 c, Color color)
-        {
-            
-            Point[] vertices = new Point[] { TransformPoint(a), TransformPoint(b), TransformPoint(c) };
+        public void FillTriangle(Vertex a, Vertex b, Vertex c, Color color)
+        {           
+            Point[] vertices = new Point[] { TransformPoint(a.Coordinates), TransformPoint(b.Coordinates), TransformPoint(c.Coordinates) };
             List<(Point from, Point to)> edges = new List<(Point from, Point to)>
             {
                 (vertices[0],vertices[1]),
                 (vertices[1],vertices[2]),
                 (vertices[2],vertices[0])
             };
+            Vector3D lightPos = new Vector3D(10, 0, 100);
+            Color aColor = CalculateColor(a.WorldCoordinates, lightPos, color, a.Normal);
+            Color bColor = CalculateColor(b.WorldCoordinates, lightPos, color, b.Normal);
+            Color cColor = CalculateColor(c.WorldCoordinates, lightPos, color, c.Normal);
             (new BucketSortScanLineFillAlgorithm()).Paint(edges, (int rowNr, int fromX, int toX) =>
              {
                  for(int i= fromX; i<= toX; i++)
                  {
                      Point point = new Point(i, rowNr);
-                     double z = InterpolatedZ(point, (vertices[0], a.Z), (vertices[1], b.Z), (vertices[2], c.Z));
-                     SetPixel(point, z , color);
+                     double z = InterpolatedZ(point, (vertices[0], a.Coordinates.Z), 
+                         (vertices[1], b.Coordinates.Z), (vertices[2], c.Coordinates.Z));
+                     Color newColor = InterpolatedColor(point, (vertices[0], aColor),
+                         (vertices[1], bColor), (vertices[2], cColor));
+                     SetPixel(point, z , newColor);
                  }
              });
+        }
+
+        private Color InterpolatedColor(Point point, (Point point, Color color) a, (Point point, Color color) b, (Point point, Color color) c)
+        {
+            double az = TriangleArea(point, b.point, c.point);
+            double bz = TriangleArea(point, a.point, c.point);
+            double cz = TriangleArea(point, a.point, b.point);
+            double n = az + cz + bz;
+            double R = (a.color.R * az + b.color.R * bz + c.color.R * cz) / n;
+            double G = (a.color.G * az + b.color.G * bz + c.color.G * cz) / n;
+            double B = (a.color.B * az + b.color.B * bz + c.color.B * cz) / n;
+            return Color.FromArgb(
+                Math.Max(0, Math.Min(255, (int)(R))),
+                Math.Max(0, Math.Min(255, (int)(G))),
+                Math.Max(0, Math.Min(255, (int)(B)))
+                );
+        }
+
+        private Color CalculateColor(Vector3D position, Vector3D lightPosition, Color color, Vector3D normal)
+        {
+            Vector3D lightVersor = (lightPosition - position);
+            Vector3D RV = (Vector3D.Normalized(normal) * 2 * Vector3D.DotProduct(Vector3D.Normalized(normal), Vector3D.Normalized(lightVersor))) - Vector3D.Normalized(lightVersor);
+            double lustrz = Math.Pow(Vector3D.DotProduct(RV, new Vector3D(0,0,1)), 1);
+            double cosLight = Vector3D.DotProduct(Vector3D.Normalized(normal), Vector3D.Normalized(lightVersor));
+            double R = ((double)color.R / 255.0) * (cosLight + 0);
+            double G = ((double)color.G / 255.0) * (cosLight + 0);
+            double B = ((double)color.B / 255.0) * (cosLight + 0);
+            return Color.FromArgb(
+                Math.Max(0,Math.Min(255,(int)(255.0*R))),
+                Math.Max(0, Math.Min(255, (int)(255.0*G))),
+                Math.Max(0, Math.Min(255, (int)(255.0*B)))
+                );
+
         }
 
         private double InterpolatedZ(Point point, (Point point, double z) a, (Point point, double z) b, (Point point, double z) c)
@@ -130,7 +155,7 @@ namespace Engin3D.Screen
             }
         }
 
-        private Point TransformPoint(Point3 point)
+        private Point TransformPoint(Vector3D point)
         {
             return new Point
             {
