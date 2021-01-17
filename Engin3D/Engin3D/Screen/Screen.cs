@@ -12,6 +12,7 @@ using System.Windows.Forms;
 
 namespace Engin3D.Screen
 {
+    public delegate Color ShadeColor(Point actualPoint, Point a, Point b, Point c);
     public class Screen
     {
         private Size size;
@@ -65,7 +66,7 @@ namespace Engin3D.Screen
             }
         }
 
-        public void FillTriangle(Vertex a, Vertex b, Vertex c, Color color)
+        public void FillTriangle(Vertex a, Vertex b, Vertex c, ShadeColor shadeColor)
         {           
             Point[] vertices = new Point[] { TransformPoint(a.Coordinates), TransformPoint(b.Coordinates), TransformPoint(c.Coordinates) };
             List<(Point from, Point to)> edges = new List<(Point from, Point to)>
@@ -74,10 +75,10 @@ namespace Engin3D.Screen
                 (vertices[1],vertices[2]),
                 (vertices[2],vertices[0])
             };
-            Vector3D lightPos = new Vector3D(10, 0, 100);
-            Color aColor = CalculateColor(a.WorldCoordinates, lightPos, color, a.Normal);
+            //Vector3D lightPos = new Vector3D(10, 0, 100);
+            /*Color aColor = CalculateColor(a.WorldCoordinates, lightPos, color, a.Normal);
             Color bColor = CalculateColor(b.WorldCoordinates, lightPos, color, b.Normal);
-            Color cColor = CalculateColor(c.WorldCoordinates, lightPos, color, c.Normal);
+            Color cColor = CalculateColor(c.WorldCoordinates, lightPos, color, c.Normal);*/
             (new BucketSortScanLineFillAlgorithm()).Paint(edges, (int rowNr, int fromX, int toX) =>
              {
                  for(int i= fromX; i<= toX; i++)
@@ -85,45 +86,15 @@ namespace Engin3D.Screen
                      Point point = new Point(i, rowNr);
                      double z = InterpolatedZ(point, (vertices[0], a.Coordinates.Z), 
                          (vertices[1], b.Coordinates.Z), (vertices[2], c.Coordinates.Z));
-                     Color newColor = InterpolatedColor(point, (vertices[0], aColor),
-                         (vertices[1], bColor), (vertices[2], cColor));
+                     Color newColor = shadeColor(point, vertices[0], vertices[1], vertices[2]);
+                     /*InterpolatedColor(point, (vertices[0], aColor),
+                         (vertices[1], bColor), (vertices[2], cColor));*/
                      SetPixel(point, z , newColor);
                  }
              });
         }
 
-        private Color InterpolatedColor(Point point, (Point point, Color color) a, (Point point, Color color) b, (Point point, Color color) c)
-        {
-            double az = TriangleArea(point, b.point, c.point);
-            double bz = TriangleArea(point, a.point, c.point);
-            double cz = TriangleArea(point, a.point, b.point);
-            double n = az + cz + bz;
-            double R = (a.color.R * az + b.color.R * bz + c.color.R * cz) / n;
-            double G = (a.color.G * az + b.color.G * bz + c.color.G * cz) / n;
-            double B = (a.color.B * az + b.color.B * bz + c.color.B * cz) / n;
-            return Color.FromArgb(
-                Math.Max(0, Math.Min(255, (int)(R))),
-                Math.Max(0, Math.Min(255, (int)(G))),
-                Math.Max(0, Math.Min(255, (int)(B)))
-                );
-        }
-
-        private Color CalculateColor(Vector3D position, Vector3D lightPosition, Color color, Vector3D normal)
-        {
-            Vector3D lightVersor = (lightPosition - position);
-            Vector3D RV = (Vector3D.Normalized(normal) * 2 * Vector3D.DotProduct(Vector3D.Normalized(normal), Vector3D.Normalized(lightVersor))) - Vector3D.Normalized(lightVersor);
-            double lustrz = Math.Pow(Vector3D.DotProduct(RV, new Vector3D(0,0,1)), 1);
-            double cosLight = Vector3D.DotProduct(Vector3D.Normalized(normal), Vector3D.Normalized(lightVersor));
-            double R = ((double)color.R / 255.0) * (cosLight + 0);
-            double G = ((double)color.G / 255.0) * (cosLight + 0);
-            double B = ((double)color.B / 255.0) * (cosLight + 0);
-            return Color.FromArgb(
-                Math.Max(0,Math.Min(255,(int)(255.0*R))),
-                Math.Max(0, Math.Min(255, (int)(255.0*G))),
-                Math.Max(0, Math.Min(255, (int)(255.0*B)))
-                );
-
-        }
+       
 
         private double InterpolatedZ(Point point, (Point point, double z) a, (Point point, double z) b, (Point point, double z) c)
         {

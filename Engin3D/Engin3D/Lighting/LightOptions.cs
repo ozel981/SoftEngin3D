@@ -6,8 +6,5 @@ using System.Threading.Tasks;
 
 namespace Engin3D.Lighting
 {
-    class Light
-    {
-
-    }
+    public enum Shading { CONSTANT, GOURAUD, PHONG};
 }

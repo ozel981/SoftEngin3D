@@ -16,12 +16,14 @@ using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.LinearAlgebra.Double;
 using Xamarin.Forms.PlatformConfiguration;
 using System.IO;
+using Engin3D.Lighting;
 
 namespace Engin3D
 {
     public partial class Form1 : Form
     {
         Scene.Scene scene = new Scene.Scene();
+        Shading shading = Shading.CONSTANT;
         Camera.Camera camera;
         Screen.Screen screen;
         public Form1()
@@ -63,29 +65,11 @@ namespace Engin3D
             Mesh.Mesh block = new Mesh.Mesh("block", vertices, faces);
             block.Position = new Vector3D(0, 0, 0);
             block.Rotation = new Vector3D(0, 0, 0);
-            
-            scene.AddMesh(new Mesh.Mesh("block", vertices, faces));
-            scene.AddMesh(new Mesh.Mesh("block", vertices, faces));
-            scene.AddMesh(new Mesh.Mesh("block", vertices, faces));
-            scene.AddMesh(new Mesh.Mesh("block", vertices, faces));
-            scene.AddMesh(new Mesh.Mesh("block", vertices, faces));
-            scene.AddMesh(new Mesh.Mesh("block", vertices, faces));
-            scene.AddMesh(new Mesh.Mesh("block", vertices, faces));
-            scene.AddMesh(new Mesh.Mesh("block", vertices, faces));
-            scene.AddMesh(new Mesh.Mesh("block", vertices, faces));
-            scene.AddMesh(new Mesh.Mesh("block", vertices, faces));
-            scene.AddMesh(new Mesh.Mesh("block", vertices, faces));
-            scene.AddMesh(new Mesh.Mesh("block", vertices, faces));
-            scene.AddMesh(new Mesh.Mesh("block", vertices, faces));
-            scene.AddMesh(new Mesh.Mesh("block", vertices, faces));
-            scene.AddMesh(new Mesh.Mesh("block", vertices, faces));
-            scene.AddMesh(new Mesh.Mesh("block", vertices, faces));
-            scene.AddMesh(new Mesh.Mesh("block", vertices, faces));
-            scene.AddMesh(new Mesh.Mesh("block", vertices, faces));
-            scene.AddMesh(new Mesh.Mesh("block", vertices, faces));
+
+            scene.AddMesh(block);
             camera = new Camera.Camera(new Vector3D(0,0,2),new Vector3D(0,0,0), settings);
             screen = new Screen.Screen(ref PictureBox);
-            Device.Device.Render(scene, camera, screen);
+            Device.Device.Render(scene, camera, screen, shading);
         }
 
         private void trackBar1_Scroll(object sender, EventArgs e)
@@ -97,7 +81,7 @@ namespace Engin3D
             }
             //scene.Meshes[0].Position = new Vector3D(0, 0, ((float)((TrackBar)sender).Value) / 20);
             scene.Meshes[0].Rotation = new Vector3D(scene.Meshes[0].Rotation.X, (((TrackBar)sender).Value * Math.PI / 180), scene.Meshes[0].Rotation.Z);
-            Device.Device.Render(scene, camera, screen);
+            Device.Device.Render(scene, camera, screen, shading);
             PictureBox.Refresh();
         }
 
@@ -125,7 +109,7 @@ namespace Engin3D
                 float angle = (float)(val * Math.PI / 180);
                 scene.Meshes[0].Rotation = new Vector3D(angle, angle, 0);
                 timeNow = DateTime.Now;
-                Device.Device.Render(scene, camera, screen);
+                Device.Device.Render(scene, camera, screen, shading);
                 TimeSpan timeItTook = DateTime.Now - timeNow;
                 this.Text = $"RealEngine3D | FPS:[{1000 / timeItTook.Milliseconds}]";
                 PictureBox.Refresh();
@@ -181,7 +165,7 @@ namespace Engin3D
                 newMesh.Position = new Vector3D(0, 0, 0);
                 scene.Meshes.Clear();
                 scene.AddMesh(newMesh);
-                Device.Device.Render(scene, camera, screen);
+                Device.Device.Render(scene, camera, screen, shading);
                 PictureBox.Refresh();
             }
         }
@@ -195,7 +179,7 @@ namespace Engin3D
             }
             //scene.Meshes[0].Position = new Vector3D(0, 0, ((float)((TrackBar)sender).Value) / 20);
             scene.Meshes[0].Rotation = new Vector3D((float)(((TrackBar)sender).Value * Math.PI / 180), scene.Meshes[0].Rotation.Y, scene.Meshes[0].Rotation.Z);
-            Device.Device.Render(scene, camera, screen);
+            Device.Device.Render(scene, camera, screen, shading);
             PictureBox.Refresh();
         }
 
@@ -208,7 +192,7 @@ namespace Engin3D
             }
             //scene.Meshes[0].Position = new Vector3D(0, 0, ((float)((TrackBar)sender).Value) / 20);
             scene.Meshes[0].Rotation = new Vector3D(scene.Meshes[0].Rotation.X, scene.Meshes[0].Rotation.Y, (float)(((TrackBar)sender).Value * Math.PI / 180));
-            Device.Device.Render(scene, camera, screen);
+            Device.Device.Render(scene, camera, screen, shading);
             PictureBox.Refresh();
         }
 
@@ -216,5 +200,12 @@ namespace Engin3D
         {
             Timer.Enabled = !Timer.Enabled;
         }
+
+        private void ConstantRadioButton_CheckedChanged(object sender, EventArgs e)
+        {shading = Shading.CONSTANT;}
+        private void GouraudRadioButton_CheckedChanged(object sender, EventArgs e)
+        {shading = Shading.GOURAUD;}
+        private void PhongRadioButton_CheckedChanged(object sender, EventArgs e)
+        {shading = Shading.PHONG;}
     }
 }
