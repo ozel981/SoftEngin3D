@@ -151,43 +151,28 @@ namespace Engin3D.Screen
             {
                 if (crossPoints.ContainsKey(i)) MergeAndSort(ref list, crossPoints[i]);
                 else Sort(ref list);
+                if (list == null) continue;
                 CrossPoint p = list;
                 CrossPoint prev = list;
                 while (p != null)
                 {
-                    if (prev == p)
-                    {
-                        prev = p;
-                        p = p.Next;
-                    }
-                    else
+                    if (prev != p)
                     {
                         drawRow(i, (int)prev.X, (int)p.X);
-                        prev = p = p.Next;
+                        prev.X += prev.M;
                     }
-                }
-
-                p = list;
-                prev = list;
-                while (p != null)
-                {
-                    p.X = (p.X + p.M);
-
-                    //
                     if (p.MaxY == i + 1)
                     {
-                        if (p == list)
-                        {
-                            list = p.Next;
-                        }
-                        else
-                        {
-                            prev.Next = p.Next;
-                        }
+                        prev.Next = p.Next;
                     }
                     prev = p;
                     p = p.Next;
                 }
+                if (list.MaxY == i + 1)
+                {
+                    list = list.Next;
+                }
+                prev.X += prev.M;
             }
         }
     }

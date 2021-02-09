@@ -7,6 +7,7 @@ using System.Drawing.Imaging;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -18,6 +19,7 @@ namespace Engin3D.Screen
         private Size size;
         private Int32[] Bits;
         private double[] ZBuffor;
+        private Mutex[] muitexes;
         private LinePainter LinePainter = new LinePainterBresenhamAlgoritm();
         private PolygonFiller PolygonFiller = new BucketSortScanLineFillAlgorithm();
         public Screen(ref PictureBox pictureBox)
@@ -25,9 +27,11 @@ namespace Engin3D.Screen
             size = pictureBox.Size;
             Bits = new Int32[pictureBox.Width * pictureBox.Height];
             ZBuffor = new double[Bits.Length];
-            for(int i=0;i<Bits.Length;i++)
+            muitexes = new Mutex[Bits.Length];
+            for (int i=0;i<Bits.Length;i++)
             {
                 ZBuffor[i] = double.MaxValue;
+                muitexes[i] = new Mutex();
             }
             GCHandle BitsHandle = GCHandle.Alloc(Bits, GCHandleType.Pinned);
             Bitmap bitmap = new Bitmap(pictureBox.Width, pictureBox.Height, pictureBox.Width * 4, PixelFormat.Format32bppPArgb, BitsHandle.AddrOfPinnedObject());
@@ -75,10 +79,6 @@ namespace Engin3D.Screen
                 (vertices[1],vertices[2]),
                 (vertices[2],vertices[0])
             };
-            //Vector3D lightPos = new Vector3D(10, 0, 100);
-            /*Color aColor = CalculateColor(a.WorldCoordinates, lightPos, color, a.Normal);
-            Color bColor = CalculateColor(b.WorldCoordinates, lightPos, color, b.Normal);
-            Color cColor = CalculateColor(c.WorldCoordinates, lightPos, color, c.Normal);*/
             (new BucketSortScanLineFillAlgorithm()).Paint(edges, (int rowNr, int fromX, int toX) =>
              {
                  for(int i= fromX; i<= toX; i++)
@@ -87,8 +87,6 @@ namespace Engin3D.Screen
                      double z = InterpolatedZ(point, (vertices[0], a.Coordinates.Z), 
                          (vertices[1], b.Coordinates.Z), (vertices[2], c.Coordinates.Z));
                      Color newColor = shadeColor(point, vertices[0], vertices[1], vertices[2]);
-                     /*InterpolatedColor(point, (vertices[0], aColor),
-                         (vertices[1], bColor), (vertices[2], cColor));*/
                      SetPixel(point, z , newColor);
                  }
              });
@@ -115,7 +113,7 @@ namespace Engin3D.Screen
             if (point.X >= 0 && point.Y >= 0 && point.X <= size.Width && point.Y <= size.Height)
             {
                 int index = point.Y * size.Width + point.X;
-                if (index < Bits.Length)
+                if (index < Bits.Length && index > 0)
                 {
                     if(z < ZBuffor[index])
                     {

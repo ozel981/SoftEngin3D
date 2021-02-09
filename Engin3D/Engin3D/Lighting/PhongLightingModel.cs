@@ -6,9 +6,7 @@ using System.Threading.Tasks;
 
 namespace Engin3D.Lighting
 {
-
-    public class Light
+    class PhongLightingModel
     {
-
     }
 }

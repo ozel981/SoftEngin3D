@@ -36,17 +36,31 @@
             this.trackBar2 = new System.Windows.Forms.TrackBar();
             this.button2 = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.Timer = new System.Windows.Forms.Timer(this.components);
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.ConstantRadioButton = new System.Windows.Forms.RadioButton();
             this.GouraudRadioButton = new System.Windows.Forms.RadioButton();
             this.PhongRadioButton = new System.Windows.Forms.RadioButton();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
+            this.SaveButton = new System.Windows.Forms.Button();
+            this.LoadButton = new System.Windows.Forms.Button();
+            this.Timer = new System.Windows.Forms.Timer(this.components);
+            this.ActionButton = new System.Windows.Forms.Button();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
+            this.StaticRadioButton = new System.Windows.Forms.RadioButton();
+            this.FollowRadioButton = new System.Windows.Forms.RadioButton();
+            this.TrustRadioButton = new System.Windows.Forms.RadioButton();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.PictureBox)).BeginInit();
             this.tableLayoutPanel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar2)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
+            this.groupBox2.SuspendLayout();
+            this.tableLayoutPanel4.SuspendLayout();
+            this.groupBox3.SuspendLayout();
+            this.tableLayoutPanel5.SuspendLayout();
             this.SuspendLayout();
             // 
             // tableLayoutPanel1
@@ -79,29 +93,29 @@
             // 
             this.tableLayoutPanel2.ColumnCount = 1;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel2.Controls.Add(this.groupBox3, 0, 4);
             this.tableLayoutPanel2.Controls.Add(this.LoadMeshButton, 0, 2);
             this.tableLayoutPanel2.Controls.Add(this.trackBar2, 0, 3);
-            this.tableLayoutPanel2.Controls.Add(this.button2, 0, 4);
             this.tableLayoutPanel2.Controls.Add(this.groupBox1, 0, 0);
+            this.tableLayoutPanel2.Controls.Add(this.groupBox2, 0, 1);
+            this.tableLayoutPanel2.Controls.Add(this.button2, 0, 5);
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel2.Location = new System.Drawing.Point(563, 3);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
-            this.tableLayoutPanel2.RowCount = 8;
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 50F));
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 50F));
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 50F));
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 50F));
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 50F));
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 50F));
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 50F));
+            this.tableLayoutPanel2.RowCount = 7;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 55F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 55F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 55F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 55F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 55F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 55F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel2.Size = new System.Drawing.Size(234, 444);
             this.tableLayoutPanel2.TabIndex = 1;
             // 
             // LoadMeshButton
             // 
-            this.LoadMeshButton.Location = new System.Drawing.Point(3, 103);
+            this.LoadMeshButton.Location = new System.Drawing.Point(3, 113);
             this.LoadMeshButton.Name = "LoadMeshButton";
             this.LoadMeshButton.Size = new System.Drawing.Size(75, 23);
             this.LoadMeshButton.TabIndex = 1;
@@ -111,21 +125,21 @@
             // 
             // trackBar2
             // 
-            this.trackBar2.Location = new System.Drawing.Point(3, 153);
+            this.trackBar2.Location = new System.Drawing.Point(3, 168);
             this.trackBar2.Maximum = 180;
             this.trackBar2.Minimum = -180;
             this.trackBar2.Name = "trackBar2";
-            this.trackBar2.Size = new System.Drawing.Size(188, 44);
+            this.trackBar2.Size = new System.Drawing.Size(188, 45);
             this.trackBar2.TabIndex = 4;
             this.trackBar2.Scroll += new System.EventHandler(this.trackBar2_Scroll);
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(3, 203);
+            this.button2.Location = new System.Drawing.Point(3, 278);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(75, 23);
             this.button2.TabIndex = 5;
-            this.button2.Text = "button2";
+            this.button2.Text = "Start";
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
@@ -135,16 +149,10 @@
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox1.Location = new System.Drawing.Point(3, 3);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(228, 44);
+            this.groupBox1.Size = new System.Drawing.Size(228, 49);
             this.groupBox1.TabIndex = 6;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Shading optoons";
-            // 
-            // Timer
-            // 
-            this.Timer.Enabled = true;
-            this.Timer.Interval = 10;
-            this.Timer.Tick += new System.EventHandler(this.Timer_Tick);
             // 
             // tableLayoutPanel3
             // 
@@ -160,7 +168,7 @@
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
             this.tableLayoutPanel3.RowCount = 1;
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(222, 25);
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(222, 30);
             this.tableLayoutPanel3.TabIndex = 0;
             // 
             // ConstantRadioButton
@@ -170,7 +178,7 @@
             this.ConstantRadioButton.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ConstantRadioButton.Location = new System.Drawing.Point(3, 3);
             this.ConstantRadioButton.Name = "ConstantRadioButton";
-            this.ConstantRadioButton.Size = new System.Drawing.Size(67, 19);
+            this.ConstantRadioButton.Size = new System.Drawing.Size(68, 24);
             this.ConstantRadioButton.TabIndex = 0;
             this.ConstantRadioButton.TabStop = true;
             this.ConstantRadioButton.Text = "Constant";
@@ -181,9 +189,9 @@
             // 
             this.GouraudRadioButton.AutoSize = true;
             this.GouraudRadioButton.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.GouraudRadioButton.Location = new System.Drawing.Point(76, 3);
+            this.GouraudRadioButton.Location = new System.Drawing.Point(77, 3);
             this.GouraudRadioButton.Name = "GouraudRadioButton";
-            this.GouraudRadioButton.Size = new System.Drawing.Size(67, 19);
+            this.GouraudRadioButton.Size = new System.Drawing.Size(68, 24);
             this.GouraudRadioButton.TabIndex = 1;
             this.GouraudRadioButton.Text = "Gouraud";
             this.GouraudRadioButton.UseVisualStyleBackColor = true;
@@ -193,13 +201,146 @@
             // 
             this.PhongRadioButton.AutoSize = true;
             this.PhongRadioButton.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.PhongRadioButton.Location = new System.Drawing.Point(149, 3);
+            this.PhongRadioButton.Location = new System.Drawing.Point(151, 3);
             this.PhongRadioButton.Name = "PhongRadioButton";
-            this.PhongRadioButton.Size = new System.Drawing.Size(70, 19);
+            this.PhongRadioButton.Size = new System.Drawing.Size(68, 24);
             this.PhongRadioButton.TabIndex = 2;
             this.PhongRadioButton.Text = "Phong";
             this.PhongRadioButton.UseVisualStyleBackColor = true;
             this.PhongRadioButton.CheckedChanged += new System.EventHandler(this.PhongRadioButton_CheckedChanged);
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.tableLayoutPanel4);
+            this.groupBox2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupBox2.Location = new System.Drawing.Point(3, 58);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(228, 49);
+            this.groupBox2.TabIndex = 7;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Save scene";
+            // 
+            // tableLayoutPanel4
+            // 
+            this.tableLayoutPanel4.ColumnCount = 3;
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tableLayoutPanel4.Controls.Add(this.SaveButton, 0, 0);
+            this.tableLayoutPanel4.Controls.Add(this.LoadButton, 1, 0);
+            this.tableLayoutPanel4.Controls.Add(this.ActionButton, 2, 0);
+            this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel4.Location = new System.Drawing.Point(3, 16);
+            this.tableLayoutPanel4.Name = "tableLayoutPanel4";
+            this.tableLayoutPanel4.RowCount = 1;
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel4.Size = new System.Drawing.Size(222, 30);
+            this.tableLayoutPanel4.TabIndex = 0;
+            this.tableLayoutPanel4.Paint += new System.Windows.Forms.PaintEventHandler(this.tableLayoutPanel4_Paint);
+            // 
+            // SaveButton
+            // 
+            this.SaveButton.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.SaveButton.Location = new System.Drawing.Point(3, 3);
+            this.SaveButton.Name = "SaveButton";
+            this.SaveButton.Size = new System.Drawing.Size(68, 24);
+            this.SaveButton.TabIndex = 0;
+            this.SaveButton.Text = "Save";
+            this.SaveButton.UseVisualStyleBackColor = true;
+            this.SaveButton.Click += new System.EventHandler(this.SaveButton_Click);
+            // 
+            // LoadButton
+            // 
+            this.LoadButton.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.LoadButton.Location = new System.Drawing.Point(77, 3);
+            this.LoadButton.Name = "LoadButton";
+            this.LoadButton.Size = new System.Drawing.Size(68, 24);
+            this.LoadButton.TabIndex = 1;
+            this.LoadButton.Text = "Load";
+            this.LoadButton.UseVisualStyleBackColor = true;
+            this.LoadButton.Click += new System.EventHandler(this.LoadButton_Click);
+            // 
+            // Timer
+            // 
+            this.Timer.Interval = 10;
+            this.Timer.Tick += new System.EventHandler(this.Timer_Tick);
+            // 
+            // ActionButton
+            // 
+            this.ActionButton.Location = new System.Drawing.Point(151, 3);
+            this.ActionButton.Name = "ActionButton";
+            this.ActionButton.Size = new System.Drawing.Size(68, 23);
+            this.ActionButton.TabIndex = 2;
+            this.ActionButton.Text = "Action";
+            this.ActionButton.UseVisualStyleBackColor = true;
+            this.ActionButton.Click += new System.EventHandler(this.ActionButton_Click);
+            // 
+            // groupBox3
+            // 
+            this.groupBox3.Controls.Add(this.tableLayoutPanel5);
+            this.groupBox3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupBox3.Location = new System.Drawing.Point(3, 223);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(228, 49);
+            this.groupBox3.TabIndex = 8;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "Shading optoons";
+            // 
+            // tableLayoutPanel5
+            // 
+            this.tableLayoutPanel5.ColumnCount = 3;
+            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tableLayoutPanel5.Controls.Add(this.StaticRadioButton, 0, 0);
+            this.tableLayoutPanel5.Controls.Add(this.FollowRadioButton, 1, 0);
+            this.tableLayoutPanel5.Controls.Add(this.TrustRadioButton, 2, 0);
+            this.tableLayoutPanel5.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel5.Location = new System.Drawing.Point(3, 16);
+            this.tableLayoutPanel5.Name = "tableLayoutPanel5";
+            this.tableLayoutPanel5.RowCount = 1;
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel5.Size = new System.Drawing.Size(222, 30);
+            this.tableLayoutPanel5.TabIndex = 0;
+            // 
+            // StaticRadioButton
+            // 
+            this.StaticRadioButton.AutoSize = true;
+            this.StaticRadioButton.Checked = true;
+            this.StaticRadioButton.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.StaticRadioButton.Location = new System.Drawing.Point(3, 3);
+            this.StaticRadioButton.Name = "StaticRadioButton";
+            this.StaticRadioButton.Size = new System.Drawing.Size(68, 24);
+            this.StaticRadioButton.TabIndex = 0;
+            this.StaticRadioButton.TabStop = true;
+            this.StaticRadioButton.Text = "Static";
+            this.StaticRadioButton.UseVisualStyleBackColor = true;
+            this.StaticRadioButton.CheckedChanged += new System.EventHandler(this.StaticRadioButton_CheckedChanged);
+            // 
+            // FollowRadioButton
+            // 
+            this.FollowRadioButton.AutoSize = true;
+            this.FollowRadioButton.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.FollowRadioButton.Location = new System.Drawing.Point(77, 3);
+            this.FollowRadioButton.Name = "FollowRadioButton";
+            this.FollowRadioButton.Size = new System.Drawing.Size(68, 24);
+            this.FollowRadioButton.TabIndex = 1;
+            this.FollowRadioButton.Text = "Follow";
+            this.FollowRadioButton.UseVisualStyleBackColor = true;
+            this.FollowRadioButton.CheckedChanged += new System.EventHandler(this.FollowRadioButton_CheckedChanged);
+            // 
+            // TrustRadioButton
+            // 
+            this.TrustRadioButton.AutoSize = true;
+            this.TrustRadioButton.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.TrustRadioButton.Location = new System.Drawing.Point(151, 3);
+            this.TrustRadioButton.Name = "TrustRadioButton";
+            this.TrustRadioButton.Size = new System.Drawing.Size(68, 24);
+            this.TrustRadioButton.TabIndex = 2;
+            this.TrustRadioButton.Text = "Trust";
+            this.TrustRadioButton.UseVisualStyleBackColor = true;
+            this.TrustRadioButton.CheckedChanged += new System.EventHandler(this.TrustRadioButton_CheckedChanged);
             // 
             // Form1
             // 
@@ -217,6 +358,11 @@
             this.groupBox1.ResumeLayout(false);
             this.tableLayoutPanel3.ResumeLayout(false);
             this.tableLayoutPanel3.PerformLayout();
+            this.groupBox2.ResumeLayout(false);
+            this.tableLayoutPanel4.ResumeLayout(false);
+            this.groupBox3.ResumeLayout(false);
+            this.tableLayoutPanel5.ResumeLayout(false);
+            this.tableLayoutPanel5.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -235,6 +381,16 @@
         private System.Windows.Forms.RadioButton ConstantRadioButton;
         private System.Windows.Forms.RadioButton GouraudRadioButton;
         private System.Windows.Forms.RadioButton PhongRadioButton;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
+        private System.Windows.Forms.Button SaveButton;
+        private System.Windows.Forms.Button LoadButton;
+        private System.Windows.Forms.Button ActionButton;
+        private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel5;
+        private System.Windows.Forms.RadioButton StaticRadioButton;
+        private System.Windows.Forms.RadioButton FollowRadioButton;
+        private System.Windows.Forms.RadioButton TrustRadioButton;
     }
 }
 

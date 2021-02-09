@@ -14,7 +14,7 @@ using System.Windows.Forms;
 
 namespace Engin3D.Camera
 { 
-    class Camera
+    public class Camera
     {
         private MathNet.Numerics.LinearAlgebra.Vector<double> position { get; set; }
         private MathNet.Numerics.LinearAlgebra.Vector<double> target { get; set; }
@@ -36,6 +36,13 @@ namespace Engin3D.Camera
             this.target = DenseVector.OfArray(new double[] { target.Z, target.X, target.Y,  });
             CreateProjectionMatrix(settings);
             CreateViewMatrix();
+
+            for (int i = 0; i < 4; i++)
+            {
+                for (int j = 0; j < 4; j++)
+                { Console.Write($"{view[i,j]}, "); }
+                Console.Write("\n");
+            }
         }
 
         private void CreateProjectionMatrix(CameraSettings settings)
@@ -82,65 +89,21 @@ namespace Engin3D.Camera
         public List<Vertex> Project(Mesh.Mesh mesh)
         {
             List<Vertex> points = new List<Vertex>();
-            Matrix<double> translation = CreateTranslationMatrix(mesh.Position);
-            Matrix<double> rotation = CreateRotationMatrix(mesh.Rotation);
-            Matrix<double> worldTransformation = translation * rotation;
-            Matrix<double> transformation = projection * view * worldTransformation;
-            foreach(Vertex vertex in mesh.Vertices)
+            Matrix<double> transformation = projection * view;
+            Vector3DTransformator transformator = new Vector3DTransformator();
+            Matrix<double> worldTransformation = transformator.CreateTranslationMatrix(mesh.Position) * transformator.CreateRotationMatrix(mesh.Rotation);
+            transformation = transformation * worldTransformation;
+            foreach (Vertex vertex in mesh.Vertices)
             {
                 points.Add(
                     new Vertex
                     {
-                        Coordinates = Transform(vertex.Coordinates, transformation),
-                        Normal = Transform(vertex.Normal, worldTransformation),
-                        WorldCoordinates = Transform(vertex.Coordinates, worldTransformation),
+                        Coordinates = transformator.Transform(vertex.Coordinates, transformation),
+                        Normal = transformator.Transform(vertex.Normal, worldTransformation),
+                        WorldCoordinates = transformator.Transform(vertex.Coordinates, worldTransformation),
                     });
             }
             return points;
-        }
-
-        private Vector3D Transform(Vector3D vector, Matrix<double> transformation)
-        {
-            MathNet.Numerics.LinearAlgebra.Vector<double> newVector = DenseVector.OfArray(new double[]
-                { vector.Z, vector.X, vector.Y, 1 });
-            newVector = transformation * newVector;
-            newVector[0] /= newVector[3];
-            newVector[1] /= newVector[3];
-            newVector[2] /= newVector[3];
-            newVector[3] /= newVector[3];
-            return new Vector3D(newVector[0], newVector[1], newVector[2]);
-        }
-        private Matrix<double> CreateTranslationMatrix(Vector3D position)
-        {
-            Matrix<double> translationMatrix = DenseMatrix.OfArray(new double[,]{
-                         {1,0,0,position.Z},
-                         {0,1,0,position.X},
-                         {0,0,1,position.Y},
-                         {0,0,0,1}
-                        });
-
-            return translationMatrix;
-        }
-        private Matrix<double> CreateRotationMatrix(Vector3D rotation)
-        {
-            double x00 = Math.Cos(rotation.X) * Math.Cos(rotation.Y);
-            double x01 = Math.Cos(rotation.X) * Math.Sin(rotation.Y) * Math.Sin(rotation.Z) - Math.Sin(rotation.X) * Math.Cos(rotation.Z);
-            double x02 = Math.Cos(rotation.X) * Math.Sin(rotation.Y) * Math.Cos(rotation.Z) + Math.Sin(rotation.X) * Math.Sin(rotation.Z);
-            double x10 = Math.Sin(rotation.X) * Math.Cos(rotation.Y);
-            double x11 = Math.Sin(rotation.X) * Math.Sin(rotation.Y) * Math.Sin(rotation.Z) + Math.Cos(rotation.X) * Math.Cos(rotation.Z);
-            double x12 = Math.Sin(rotation.X) * Math.Sin(rotation.Y) * Math.Cos(rotation.Z) - Math.Cos(rotation.X) * Math.Sin(rotation.Z);
-            double x20 = -Math.Sin(rotation.Y);
-            double x21 = Math.Cos(rotation.Y) * Math.Sin(rotation.Z);
-            double x22 = Math.Cos(rotation.Y) * Math.Cos(rotation.Z);
-
-            Matrix<double> rotationMatrix = DenseMatrix.OfArray(new double[,]{
-                         {x00,x01,x02,0},
-                         {x10,x11,x12,0},
-                         {x20,x21,x22,0},
-                         {0,0,0,1}
-                        });
-
-            return rotationMatrix;
         }
     }
 } 

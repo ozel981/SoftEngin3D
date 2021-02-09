@@ -1,0 +1,55 @@
+
+            Vertex[] vertices = new Vertex[]
+            {
+                new Vertex { Coordinates = new Vector3D(-0.5f,-1.5f,-0.5f), Normal = new Vector3D(-0.5f,-1.5f,-0.5f)},
+                new Vertex { Coordinates = new Vector3D(0.5f,-1.5f,-0.5f), Normal = new Vector3D(0.5f,-1.5f,-0.5f) },
+                new Vertex { Coordinates = new Vector3D(0.5f,1.5f,-0.5f), Normal = new Vector3D(0.5f,1.5f,-0.5f) },
+                new Vertex { Coordinates = new Vector3D(-0.5f,1.5f,-0.5f), Normal = new Vector3D(-0.5f,1.5f,-0.5f) },
+                new Vertex { Coordinates = new Vector3D(-0.5f,-1.5f,0.5f), Normal = new Vector3D(-0.5f,-1.5f,0.5f) },
+                new Vertex { Coordinates = new Vector3D(0.5f,-1.5f,0.5f), Normal = new Vector3D(0.5f,-1.5f,0.5f) },
+                new Vertex { Coordinates = new Vector3D(0.5f,1.5f,0.5f), Normal = new Vector3D(0.5f,1.5f,0.5f) },
+                new Vertex { Coordinates = new Vector3D(-0.5f,1.5f,0.5f), Normal = new Vector3D(-0.5f,1.5f,0.5f) },
+            };
+            Face[] faces = new Face[]
+            {
+                new Face {A = 0, B = 1, C = 2},
+                new Face {A = 0, B = 2, C = 3},
+                new Face {A = 1, B = 5, C = 6},
+                new Face {A = 1, B = 6, C = 2},
+                new Face {A = 4, B = 0, C = 3},
+                new Face {A = 4, B = 3, C = 7},
+                new Face {A = 5, B = 7, C = 4},
+                new Face {A = 5, B = 7, C = 6},
+                new Face {A = 7, B = 2, C = 3},
+                new Face {A = 7, B = 2, C = 6},
+                new Face {A = 0, B = 5, C = 4},
+                new Face {A = 0, B = 5, C = 1}
+            };
+            Mesh.Mesh block1 = new Mesh.Mesh("block", vertices, faces);
+            Mesh.Mesh block2 = new Mesh.Mesh("block", vertices, faces);
+            Mesh.Mesh block3 = new Mesh.Mesh("block", vertices, faces);
+            Mesh.Mesh block4 = new Mesh.Mesh("block", vertices, faces);
+            Mesh.Mesh block5 = new Mesh.Mesh("block", vertices, faces);
+            Mesh.Mesh block6 = new Mesh.Mesh("block", vertices, faces);
+            Mesh.Mesh block7 = new Mesh.Mesh("block", vertices, faces);
+            Mesh.Mesh block8 = new Mesh.Mesh("block", vertices, faces);
+            Mesh.Mesh block9 = new Mesh.Mesh("block", vertices, faces);
+            block1.Position = new Vector3D(-2, 0, -2); block1.Rotation = new Vector3D(0, 0, 0);
+            block2.Position = new Vector3D(-2, 0, 0); block2.Rotation = new Vector3D(0, 0, 0);
+            block3.Position = new Vector3D(-2, 0, 2); block3.Rotation = new Vector3D(0, 0, 0);
+            block4.Position = new Vector3D(0, 0, -2); block4.Rotation = new Vector3D(0, 0, 0);
+            block5.Position = new Vector3D(0, 0, 0); block5.Rotation = new Vector3D(0, 0, 0);
+            block6.Position = new Vector3D(0, 0, 2); block6.Rotation = new Vector3D(0, 0, 0);
+            block7.Position = new Vector3D(2, 0, -2); block7.Rotation = new Vector3D(0, 0, 0);
+            block8.Position = new Vector3D(2, 0, 0); block8.Rotation = new Vector3D(0, 0, 0);
+            block9.Position = new Vector3D(2, 0, 2); block9.Rotation = new Vector3D(0, 0, 0);
+
+            scene.AddMesh(block1);
+            scene.AddMesh(block2);
+            scene.AddMesh(block3);
+            scene.AddMesh(block4);
+            scene.AddMesh(block5);
+            scene.AddMesh(block6);
+            scene.AddMesh(block7);
+            scene.AddMesh(block8);
+            scene.AddMesh(block9);

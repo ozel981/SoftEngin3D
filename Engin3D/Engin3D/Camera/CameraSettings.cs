@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Engin3D.Camera
 {
-    struct CameraSettings
+    public struct CameraSettings
     {
         public double FieldOfView { get; set; }
         public double AspectRatio { get; set; }

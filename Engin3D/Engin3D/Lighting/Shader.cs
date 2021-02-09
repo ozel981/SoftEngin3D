@@ -15,8 +15,20 @@ namespace Engin3D.Lighting
 
     public abstract class Shader : IShader
     {
-        public Vector3D lightPos = new Vector3D(10, 0, 100);
-        public abstract void ShadeFaces(Face[] faces, List<Vertex> vertices,
+        public Vector3D lightPos = new Vector3D(50, -50, 0);
+        public void ShadeFaces(Face[] faces, List<Vertex> vertices,
+            Screen.Screen screen)
+        {
+            Parallel.ForEach(faces, new ParallelOptions { MaxDegreeOfParallelism = 8 }, (face) =>
+            { 
+                if(true /*TODO: if face is visible*/)
+                {
+                    ShadeFace(face, vertices, screen);
+                }
+            });
+        }
+
+        protected abstract void ShadeFace(Face face, List<Vertex> vertices,
             Screen.Screen screen);
 
         protected virtual Color InterpolatedColor(Point point, (Point point, Color color) a, (Point point, Color color) b, (Point point, Color color) c)
@@ -35,12 +47,26 @@ namespace Engin3D.Lighting
                 );
         }
 
+        protected virtual Vector3D InterpolatedVector(Point point, (Point point, Vector3D normal) a, (Point point, Vector3D normal) b, (Point point, Vector3D normal) c)
+        {
+            double az = TriangleArea(point, b.point, c.point);
+            double bz = TriangleArea(point, a.point, c.point);
+            double cz = TriangleArea(point, a.point, b.point);
+            double n = az + cz + bz;
+            double X = (a.normal.X * az + b.normal.X * bz + c.normal.X * cz) / n;
+            double Y = (a.normal.Y * az + b.normal.Y * bz + c.normal.Y * cz) / n;
+            double Z = (a.normal.Z * az + b.normal.Z * bz + c.normal.Z * cz) / n;
+            return new Vector3D(X,Y,Z);
+        }
+
         protected virtual Color CalculateColor(Vector3D position, Vector3D lightPosition, Color color, Vector3D normal)
         {
             Vector3D lightVersor = (lightPosition - position);
             Vector3D RV = (Vector3D.Normalized(normal) * 2 * Vector3D.DotProduct(Vector3D.Normalized(normal), Vector3D.Normalized(lightVersor))) - Vector3D.Normalized(lightVersor);
-            double lustrz = Math.Pow(Vector3D.DotProduct(RV, new Vector3D(0, 0, 1)), 1);
+            double mirroring = Math.Pow(Vector3D.DotProduct(RV, new Vector3D(0, 0, 1)), 1);
             double cosLight = Vector3D.DotProduct(Vector3D.Normalized(normal), Vector3D.Normalized(lightVersor));
+            if (cosLight > 1) cosLight = 1;
+            if (cosLight < 0) cosLight = 0;
             double R = ((double)color.R / 255.0) * (cosLight + 0);
             double G = ((double)color.G / 255.0) * (cosLight + 0);
             double B = ((double)color.B / 255.0) * (cosLight + 0);
@@ -59,39 +85,29 @@ namespace Engin3D.Lighting
 
     public class NoShader : Shader
     {
-        public override void ShadeFaces(Face[] faces, List<Vertex> vertices, 
+        protected override void ShadeFace(Face face, List<Vertex> vertices, 
             Screen.Screen screen)
         {
-            foreach (Face face in faces)
-            {
-                screen.FillTriangle(vertices[face.A], vertices[face.B], vertices[face.C],
-                    (p, a, b, c) =>
-                    {
-                        return Color.LightGray;
-                    });
-            }
+            screen.FillTriangle(vertices[face.A], vertices[face.B], vertices[face.C], (p, a, b, c) => Color.LightGray);
         }
 
 
     }
     public class ConstantShader : Shader
     {
-        public override void ShadeFaces(Face[] faces, List<Vertex> vertices,
+        protected override void ShadeFace(Face face, List<Vertex> vertices,
             Screen.Screen screen)
         {
-            foreach (Face face in faces)
-            {
-                Vertex pointA = vertices[face.A];
-                Vertex pointB = vertices[face.B];
-                Vertex pointC = vertices[face.C];
-                Vector3D worldCenterCoordinates = (pointA.WorldCoordinates +
-                    pointB.WorldCoordinates + pointC.WorldCoordinates) / 3;
-                Vector3D centerNormal = (pointA.Normal + pointB.Normal +
-                    pointC.Normal) / 3;
-                Color newColor = CalculateColor(worldCenterCoordinates, lightPos,
-                    Color.LightGray, centerNormal);
-                screen.FillTriangle(pointA, pointB, pointC, ((p, a, b, c) => newColor));
-            }
+            Vertex pointA = vertices[face.A];
+            Vertex pointB = vertices[face.B];
+            Vertex pointC = vertices[face.C];
+            Vector3D worldCenterCoordinates = (pointA.WorldCoordinates +
+                pointB.WorldCoordinates + pointC.WorldCoordinates) / 3;
+            Vector3D centerNormal = (pointA.Normal + pointB.Normal +
+                pointC.Normal) / 3;
+            Color newColor = CalculateColor(worldCenterCoordinates, lightPos,
+                Color.LightGray, centerNormal);
+            screen.FillTriangle(pointA, pointB, pointC, ((p, a, b, c) => newColor));
         }
     }
 
@@ -107,34 +123,36 @@ namespace Engin3D.Lighting
                     lightPos, Color.LightGray, vertex.Normal));
             }
         }
-        public override void ShadeFaces(Face[] faces, List<Vertex> vertices,
+        protected override void ShadeFace(Face face, List<Vertex> vertices,
             Screen.Screen screen)
         {
-            foreach (Face face in faces)
-            {
-                screen.FillTriangle(vertices[face.A], vertices[face.B], vertices[face.C],
-                    (p, a, b, c) =>
-                    {
-                        return InterpolatedColor(p, (a, PointColors[face.A]),
-                         (b, PointColors[face.B]), (c, PointColors[face.C]));
-                    });
-            }
+            screen.FillTriangle(vertices[face.A], vertices[face.B], vertices[face.C],
+                (p, a, b, c) =>
+                {
+                    return InterpolatedColor(p, (a, PointColors[face.A]),
+                        (b, PointColors[face.B]), (c, PointColors[face.C]));
+                });
         }
     }
 
     public class PhongShader : Shader
     {
-        public override void ShadeFaces(Face[] faces, List<Vertex> vertices,
+        protected override void ShadeFace(Face face, List<Vertex> vertices,
             Screen.Screen screen)
         {
-            foreach (Face face in faces)
-            {
-                screen.FillTriangle(vertices[face.A], vertices[face.B], vertices[face.C],
-                    (p, a, b, c) =>
-                    {
-                        return Color.LightGray;
-                    });
-            }
+            Vertex pointA = vertices[face.A];
+            Vertex pointB = vertices[face.B];
+            Vertex pointC = vertices[face.C];
+            screen.FillTriangle(pointA, pointB, pointC,
+                (p, a, b, c) =>
+                {
+                    Vector3D normal = InterpolatedVector(p, (a, pointA.Normal),
+                        (b, pointB.Normal), (c, pointC.Normal));
+                    Vector3D worldCoordinates = InterpolatedVector(p, (a, pointA.WorldCoordinates),
+                        (b, pointB.WorldCoordinates), (c, pointC.WorldCoordinates));
+                    return CalculateColor(worldCoordinates,
+                    lightPos, Color.LightGray, normal);
+                });
         }
     }
 }
