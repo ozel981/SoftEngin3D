@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Numerics;
 using System.Text;
@@ -25,6 +26,11 @@ namespace Engin3D.Mesh
             X /= length;
             Y /= length;
             Z /= length;
+        }
+
+        public double Length()
+        {
+            return Math.Sqrt(X * X + Y * Y + Z * Z);
         }
 
         public static Vector3D operator*(Vector3D v, double a)
@@ -57,12 +63,23 @@ namespace Engin3D.Mesh
             double length = Math.Sqrt(a.X * a.X + a.Y * a.Y + a.Z * a.Z);
             return new Vector3D(a.X / length, a.Y / length, a.Z / length);
         }
+
+        public static implicit operator Vector3D(Color color)
+        {
+            return new Vector3D(color.R, color.G, color.G);
+        }
+
+        public static implicit operator Color(Vector3D vector)
+        {
+            return Color.FromArgb((int)vector.X, (int)vector.Y, (int)vector.Z);
+        }
     }
     public struct Face
     {
         public int A { get; set; }
         public int B { get; set; }
         public int C { get; set; }
+        public Vector3D Vector { get; set; }
     }
     public struct Vertex
     {
@@ -72,6 +89,7 @@ namespace Engin3D.Mesh
     }
     public class Mesh
     {
+        public Vector3D Color { get; set; }
         public string Name { get; set; }
         public Vertex[] Vertices { get; set; }
         public Face[] Faces { get; set; }

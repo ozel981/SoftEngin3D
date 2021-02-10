@@ -10,26 +10,30 @@ namespace Engin3D.Lighting
 {
     public interface IShader
     {
-        void ShadeFaces(Face[] faces, List<Vertex> vertices, Screen.Screen screen);
+        void ShadeFaces(Device.ProjectedMesh projectedMesh, Screen.Screen screen, Vector3D CemeraPosition);
     }
 
     public abstract class Shader : IShader
     {
+        protected PhongLightingModel PhongLightingModel;
+        protected List<LightModeler> LightModelers;
         public Vector3D lightPos = new Vector3D(50, -50, 0);
-        public void ShadeFaces(Face[] faces, List<Vertex> vertices,
-            Screen.Screen screen)
+        public Shader(PhongLightingModel phongLightingModel, List<LightModeler> lightModelers)
         {
-            Parallel.ForEach(faces, new ParallelOptions { MaxDegreeOfParallelism = 8 }, (face) =>
-            { 
-                if(true /*TODO: if face is visible*/)
-                {
-                    ShadeFace(face, vertices, screen);
-                }
+            PhongLightingModel = phongLightingModel;
+            LightModelers = lightModelers;
+        }
+        public void ShadeFaces(Device.ProjectedMesh projectedMesh, Screen.Screen screen, Vector3D CemeraPosition)
+        {
+            Parallel.ForEach(projectedMesh.Faces, new ParallelOptions { MaxDegreeOfParallelism = 8 }, (face) =>
+            {
+                ShadeFace(face, projectedMesh.Vertices, screen, new Vector3D(CemeraPosition.Z, CemeraPosition.X, CemeraPosition.Y), 
+                    projectedMesh.Color);
             });
         }
 
         protected abstract void ShadeFace(Face face, List<Vertex> vertices,
-            Screen.Screen screen);
+            Screen.Screen screen, Vector3D CemeraPosition, Color color);
 
         protected virtual Color InterpolatedColor(Point point, (Point point, Color color) a, (Point point, Color color) b, (Point point, Color color) c)
         {
@@ -59,23 +63,7 @@ namespace Engin3D.Lighting
             return new Vector3D(X,Y,Z);
         }
 
-        protected virtual Color CalculateColor(Vector3D position, Vector3D lightPosition, Color color, Vector3D normal)
-        {
-            Vector3D lightVersor = (lightPosition - position);
-            Vector3D RV = (Vector3D.Normalized(normal) * 2 * Vector3D.DotProduct(Vector3D.Normalized(normal), Vector3D.Normalized(lightVersor))) - Vector3D.Normalized(lightVersor);
-            double mirroring = Math.Pow(Vector3D.DotProduct(RV, new Vector3D(0, 0, 1)), 1);
-            double cosLight = Vector3D.DotProduct(Vector3D.Normalized(normal), Vector3D.Normalized(lightVersor));
-            if (cosLight > 1) cosLight = 1;
-            if (cosLight < 0) cosLight = 0;
-            double R = ((double)color.R / 255.0) * (cosLight + 0);
-            double G = ((double)color.G / 255.0) * (cosLight + 0);
-            double B = ((double)color.B / 255.0) * (cosLight + 0);
-            return Color.FromArgb(
-                Math.Max(0, Math.Min(255, (int)(255.0 * R))),
-                Math.Max(0, Math.Min(255, (int)(255.0 * G))),
-                Math.Max(0, Math.Min(255, (int)(255.0 * B)))
-                );
-        }
+        
 
         protected virtual double TriangleArea(Point A, Point B, Point C)
         {
@@ -85,18 +73,20 @@ namespace Engin3D.Lighting
 
     public class NoShader : Shader
     {
+        public NoShader(PhongLightingModel phongLightingModel, List<LightModeler> lightModelers) : base(phongLightingModel, lightModelers) { }
         protected override void ShadeFace(Face face, List<Vertex> vertices, 
-            Screen.Screen screen)
+            Screen.Screen screen, Vector3D CemeraPosition, Color color)
         {
-            screen.FillTriangle(vertices[face.A], vertices[face.B], vertices[face.C], (p, a, b, c) => Color.LightGray);
+            screen.FillTriangle(vertices[face.A], vertices[face.B], vertices[face.C], (p, a, b, c) => color);
         }
 
 
     }
     public class ConstantShader : Shader
     {
+        public ConstantShader(PhongLightingModel phongLightingModel, List<LightModeler> lightModelers) : base(phongLightingModel, lightModelers) { }
         protected override void ShadeFace(Face face, List<Vertex> vertices,
-            Screen.Screen screen)
+            Screen.Screen screen, Vector3D CemeraPosition, Color color)
         {
             Vertex pointA = vertices[face.A];
             Vertex pointB = vertices[face.B];
@@ -105,8 +95,8 @@ namespace Engin3D.Lighting
                 pointB.WorldCoordinates + pointC.WorldCoordinates) / 3;
             Vector3D centerNormal = (pointA.Normal + pointB.Normal +
                 pointC.Normal) / 3;
-            Color newColor = CalculateColor(worldCenterCoordinates, lightPos,
-                Color.LightGray, centerNormal);
+            Color newColor = PhongLightingModel.CalculateColor(worldCenterCoordinates,
+                color, centerNormal, CemeraPosition, LightModelers);
             screen.FillTriangle(pointA, pointB, pointC, ((p, a, b, c) => newColor));
         }
     }
@@ -114,17 +104,18 @@ namespace Engin3D.Lighting
     public class GouraudShader : Shader
     {
         protected List<Color> PointColors;
-        public GouraudShader(List<Vertex> vertices)
+        public GouraudShader(PhongLightingModel phongLightingModel, List<LightModeler> lightModelers, Device.ProjectedMesh projectedMesh, Vector3D CameraPosition)
+            : base(phongLightingModel, lightModelers) 
         {
             PointColors = new List<Color>();
-            foreach (Vertex vertex in vertices)
+            foreach (Vertex vertex in projectedMesh.Vertices)
             {
-                PointColors.Add(CalculateColor(vertex.WorldCoordinates,
-                    lightPos, Color.LightGray, vertex.Normal));
+                PointColors.Add(PhongLightingModel.CalculateColor(vertex.WorldCoordinates,
+                    projectedMesh.Color, vertex.Normal, CameraPosition, LightModelers));
             }
         }
         protected override void ShadeFace(Face face, List<Vertex> vertices,
-            Screen.Screen screen)
+            Screen.Screen screen, Vector3D CemeraPosition, Color color)
         {
             screen.FillTriangle(vertices[face.A], vertices[face.B], vertices[face.C],
                 (p, a, b, c) =>
@@ -137,8 +128,9 @@ namespace Engin3D.Lighting
 
     public class PhongShader : Shader
     {
+        public PhongShader(PhongLightingModel phongLightingModel, List<LightModeler> lightModelers) : base(phongLightingModel, lightModelers) { }
         protected override void ShadeFace(Face face, List<Vertex> vertices,
-            Screen.Screen screen)
+            Screen.Screen screen, Vector3D CemeraPosition, Color color)
         {
             Vertex pointA = vertices[face.A];
             Vertex pointB = vertices[face.B];
@@ -150,8 +142,8 @@ namespace Engin3D.Lighting
                         (b, pointB.Normal), (c, pointC.Normal));
                     Vector3D worldCoordinates = InterpolatedVector(p, (a, pointA.WorldCoordinates),
                         (b, pointB.WorldCoordinates), (c, pointC.WorldCoordinates));
-                    return CalculateColor(worldCoordinates,
-                    lightPos, Color.LightGray, normal);
+                    return PhongLightingModel.CalculateColor(worldCoordinates,
+                     color, normal, CemeraPosition, LightModelers);
                 });
         }
     }

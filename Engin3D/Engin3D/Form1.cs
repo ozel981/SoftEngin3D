@@ -22,6 +22,7 @@ namespace Engin3D
 {
     public partial class Form1 : Form
     {
+        PhongLightingModel PhongLightingModel = new PhongLightingModel();
         Scene.Scene scene = new Scene.Scene();
         Shading shading = Shading.CONSTANT;
         Camera.Camera camera;
@@ -30,6 +31,8 @@ namespace Engin3D
         public Form1()
         {
             InitializeComponent();
+            PictureBox.Image = new Bitmap(PictureBox.Width, PictureBox.Height);
+            screen = new Screen.Screen(ref PictureBox);
             settings = new Camera.CameraSettings
             {
                 FieldOfView = 100,
@@ -41,18 +44,12 @@ namespace Engin3D
             {
                 Position = new Vector3D(0, 3, 3),
                 Targer = new Vector3D(0, 0, 0),
-                //StickPositionToMesh = 4,
-                //StickTargetToMesh = 4,
                 CameraSettings = settings
             });
-            screen = new Screen.Screen(ref PictureBox);
-            Device.Device.Render(scene, screen, shading);
+            LoadStartMesh();
+            
         }
 
-        private void tableLayoutPanel1_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
 
         int val = 0;
         int avgFPS = 0;
@@ -64,14 +61,33 @@ namespace Engin3D
 
         private void Timer_Tick(object sender, EventArgs e)
         {
+            if(FogCheckBox.Checked)
+            {
+                PhongLightingModel.Fog = true;
+                if(PhongLightingModel.FogIntencity > 4)
+                {
+                    PhongLightingModel.FogIntencity -= 0.2;
+                }
+            }
+            else
+            {
+                if (PhongLightingModel.FogIntencity < 10)
+                {
+                    PhongLightingModel.FogIntencity += 0.2;
+                }
+                else
+                {
+                    PhongLightingModel.Fog = false;
+                }
+            }
             using (Graphics graphics = Graphics.FromImage(PictureBox.Image))
             {
                 graphics.Clear(Color.White);
 
             }
-            if(scene.Meshes.Count > 9)
+            if (scene.Meshes.Count > 9)
             {
-                switch(wayStage)
+                switch (wayStage)
                 {
                     case -1:
                         {
@@ -134,13 +150,9 @@ namespace Engin3D
                         }
                         break;
                 }
-                Device.Device.Render(scene, screen, shading);
-                /*val++;
-                val %= 360;
-                float angle = (float)(val * Math.PI / 180);
-                scene.Meshes[1].Rotation = new Vector3D(angle, angle, scene.Meshes[0].Rotation.Z);
+                Device.Device.Render(scene, screen, shading, PhongLightingModel);               
                 timeNow = DateTime.Now;
-                Device.Device.Render(scene, screen, shading);
+                Device.Device.Render(scene, screen, shading, PhongLightingModel);
                 TimeSpan timeItTook = DateTime.Now - timeNow;
                 if (timeItTook.Milliseconds == 0) this.Text = $"RealEngine3D | FPS:[oo]";
                 else
@@ -153,10 +165,10 @@ namespace Engin3D
                     avgFPS += (int)(1000 / timeItTook.Milliseconds);
                     iter++;
                     this.Text = $"RealEngine3D | FPS:[{avgFPS/ iter}]";
-                }*/
+                }
                 PictureBox.Refresh();
             };
-            
+
         }
 
         private async void LoadMeshButton_Click(object sender, EventArgs e)
@@ -177,24 +189,47 @@ namespace Engin3D
                     using (FileStream openStream = File.OpenRead(openFileDialog.FileName))
                     {
                         MeshesCollection meshesCollection = await JsonSerializer.DeserializeAsync<MeshesCollection>(openStream);
-                        
+
                         AddMeshes(meshesCollection.meshes);
                     }
                 }
             }
         }
 
+        private async void LoadStartMesh()
+        {
+            string path = Application.StartupPath;
+            path = path.Substring(0, path.Length - 17);
+            path += "Objects\\MyScene";
+            using (FileStream openStream = File.OpenRead(path))
+            {
+                try
+                {
+                    scene = await JsonSerializer.DeserializeAsync<Scene.Scene>(openStream);
+                    Device.Device.Render(scene, screen, shading, PhongLightingModel);
+                    PictureBox.Refresh();
+                }
+                catch
+                {
+                    MessageBox.Show("Nie udało się załadować");
+                }
+            }
+        }
+
+
         private void AddMeshes(MeshData[] meshes)
         {
-            foreach(MeshData mesh in meshes)
+            foreach (MeshData mesh in meshes)
             {
                 List<Vertex> vectors = new List<Vertex>();
                 Dictionary<Vector3D, Vector3D> newVectors = new Dictionary<Vector3D, Vector3D>();
                 Dictionary<int, int> indexes = new Dictionary<int, int>();
                 Dictionary<Vector3D, int> vectorIndexes = new Dictionary<Vector3D, int>();
+                List<Vector3D> Normals = new List<Vector3D>();
                 int index = 0;
-                for(int i=3;i<=mesh.positions.Length;i+=3)
+                for (int i = 3; i <= mesh.positions.Length; i += 3)
                 {
+                    Normals.Add(new Vector3D(mesh.normals[i - 3], mesh.normals[i - 2], mesh.normals[i - 1]));
                     Vector3D newCoordinates = new Vector3D(mesh.positions[i - 3], mesh.positions[i - 2], mesh.positions[i - 1]);
 
                     if (newVectors.ContainsKey(newCoordinates))
@@ -208,8 +243,8 @@ namespace Engin3D
                         newVectors.Add(newCoordinates, new Vector3D(mesh.normals[i - 3], mesh.normals[i - 2], mesh.normals[i - 1]));
                     }
                     indexes.Add(i / 3 - 1, vectorIndexes[newCoordinates]);
-                }  
-                foreach(var vector in newVectors)
+                }
+                foreach (var vector in newVectors)
                 {
                     vectors.Add(
                         new Vertex
@@ -221,13 +256,15 @@ namespace Engin3D
                 List<Face> faces = new List<Face>();
                 for (int i = 0; i < mesh.indices.Length; i += 3)
                 {
-                    faces.Add(new Face { A = indexes[mesh.indices[i]], B = indexes[mesh.indices[i + 1]], C = indexes[mesh.indices[i + 2]] });
-                }
-                Mesh.Mesh newMesh = new Mesh.Mesh("monkey", vectors.ToArray(), faces.ToArray());
+                    faces.Add(new Face { A = indexes[mesh.indices[i]], B = indexes[mesh.indices[i + 1]], C = indexes[mesh.indices[i + 2]],
+                    Vector = (Normals[mesh.indices[i]] + Normals[mesh.indices[i + 1]] + Normals[mesh.indices[i + 2]])/3});
+                }           
+                Mesh.Mesh newMesh = new Mesh.Mesh($"mesh", vectors.ToArray(), faces.ToArray());
                 newMesh.Rotation = new Vector3D(0, 0, 0);
-                newMesh.Position = new Vector3D(0, 2, 0);
-                scene.AddMesh(newMesh);
-                Device.Device.Render(scene, screen, shading);
+                newMesh.Position = new Vector3D(0, 0, 0);
+                scene.Meshes.Clear();
+                scene.AddMesh(newMesh);  
+                Device.Device.Render(scene, screen, shading, PhongLightingModel);
                 PictureBox.Refresh();
             }
         }
@@ -239,9 +276,9 @@ namespace Engin3D
                 graphics.Clear(Color.White);
 
             }
-           // scene.Meshes[9].Position = new Vector3D(((float)((TrackBar)sender).Value / 45), 0, 0);
-            scene.Meshes[9].Rotation = new Vector3D(scene.Meshes[0].Rotation.X, (float)(((TrackBar)sender).Value * Math.PI / 180), scene.Meshes[0].Rotation.Z);
-            Device.Device.Render(scene, screen, shading);
+            scene.Meshes[0].Position = new Vector3D(0, 0, ((float)((TrackBar)sender).Value / 45));
+            //scene.Meshes[0].Rotation = new Vector3D((float)(((TrackBar)sender).Value * Math.PI / 180), scene.Meshes[0].Rotation.Y, scene.Meshes[0].Rotation.Z);
+            Device.Device.Render(scene, screen, shading, PhongLightingModel);
             PictureBox.Refresh();
         }
 
@@ -253,11 +290,11 @@ namespace Engin3D
         }
 
         private void ConstantRadioButton_CheckedChanged(object sender, EventArgs e)
-        {shading = Shading.CONSTANT; avgFPS = 0; iter = 0; }
+        { shading = Shading.CONSTANT; avgFPS = 0; iter = 0; }
         private void GouraudRadioButton_CheckedChanged(object sender, EventArgs e)
-        {shading = Shading.GOURAUD; avgFPS = 0; iter = 0; }
+        { shading = Shading.GOURAUD; avgFPS = 0; iter = 0; }
         private void PhongRadioButton_CheckedChanged(object sender, EventArgs e)
-        {shading = Shading.PHONG; avgFPS = 0; iter = 0; }
+        { shading = Shading.PHONG; avgFPS = 0; iter = 0; }
 
         private void SaveButton_Click(object sender, EventArgs e)
         {
@@ -281,7 +318,7 @@ namespace Engin3D
                         MessageBox.Show("Zapisano pomyślnie");
                     }
                     catch (Exception)
-                    { 
+                    {
                         MessageBox.Show("Nie udało się zapisać");
                         return;
                     }
@@ -311,7 +348,6 @@ namespace Engin3D
                         try
                         {
                             scene = await JsonSerializer.DeserializeAsync<Scene.Scene>(openStream);
-                            MessageBox.Show("Udało się załadować");
                         }
                         catch
                         {
@@ -322,15 +358,11 @@ namespace Engin3D
             }
         }
 
-        private void tableLayoutPanel4_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
 
         float rotX = 0;
         private void ActionButton_Click(object sender, EventArgs e)
         {
-            using (Graphics graphics = Graphics.FromImage(PictureBox.Image))
+            /*using (Graphics graphics = Graphics.FromImage(PictureBox.Image))
             {
                 graphics.Clear(Color.White);
 
@@ -339,7 +371,18 @@ namespace Engin3D
             rotX %= 360;
             scene.Meshes[9].Rotation = new Vector3D((float)(rotX * Math.PI / 180), scene.Meshes[0].Rotation.Y, scene.Meshes[0].Rotation.Z);
             Device.Device.Render(scene, screen, shading);
-            PictureBox.Refresh();
+            PictureBox.Refresh();*/
+            scene.Meshes[0].Color = Color.Gray;
+            scene.Meshes[1].Color = Color.Purple;
+            scene.Meshes[2].Color = Color.Blue;
+            scene.Meshes[3].Color = Color.Yellow;
+            scene.Meshes[4].Color = Color.White;
+            scene.Meshes[5].Color = Color.Black;
+            scene.Meshes[6].Color = Color.DarkGray;
+            scene.Meshes[7].Color = Color.LightGray;
+            scene.Meshes[8].Color = Color.Gold;
+            scene.Meshes[9].Color = Color.Red;
+            scene.Meshes[10].Color = Color.LightBlue;
         }
 
         private void StaticRadioButton_CheckedChanged(object sender, EventArgs e)
@@ -352,7 +395,7 @@ namespace Engin3D
             scene.ActiveCameraIndex = 1;
         }
 
-        private void TrustRadioButton_CheckedChanged(object sender, EventArgs e)
+        private void StickRadioButton_CheckedChanged(object sender, EventArgs e)
         {
             scene.ActiveCameraIndex = 2;
         }

@@ -107,6 +107,7 @@
     <Compile Include="Device\Device.cs" />
     <Compile Include="Device\Vector3DTransformator.cs" />
     <Compile Include="Lighting\Light.cs" />
+    <Compile Include="Lighting\LightModeler.cs" />
     <Compile Include="Lighting\LightOptions.cs" />
     <Compile Include="Lighting\PhongLightingModel.cs" />
     <Compile Include="Lighting\Shader.cs" />
