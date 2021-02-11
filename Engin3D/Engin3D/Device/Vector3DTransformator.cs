@@ -24,7 +24,16 @@ namespace Engin3D.Device
                 return Transform(vector, translation * rotation);
             }
         }
+
         public Vector3D Transform(Vector3D vector, Matrix<double> transformation)
+        {
+            MathNet.Numerics.LinearAlgebra.Vector<double> newVector = DenseVector.OfArray(new double[]
+                { vector.Z, vector.X, vector.Y, 1 });
+            newVector = transformation * newVector;
+            return new Vector3D(newVector[1], newVector[2], newVector[0]);
+        }
+
+        public Vector3D TransformForCamera(Vector3D vector, Matrix<double> transformation)
         {
             MathNet.Numerics.LinearAlgebra.Vector<double> newVector = DenseVector.OfArray(new double[]
                 { vector.Z, vector.X, vector.Y, 1 });

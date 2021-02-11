@@ -23,6 +23,8 @@ namespace Engin3D.Scene
         {
             Meshes = new List<Mesh.Mesh>();
             CamerasOrientation = new List<CameraOrientation>();
+            Reflectors = new List<ReflectorOrientation>();
+            PointLights = new List<PointLightOrientation>();
             ActiveCameraIndex = 0;
         }
 

@@ -98,7 +98,7 @@ namespace Engin3D.Camera
                 points.Add(
                     new Vertex
                     {
-                        Coordinates = transformator.Transform(vertex.Coordinates, transformation),
+                        Coordinates = transformator.TransformForCamera(vertex.Coordinates, transformation),
                         Normal = transformator.Transform(vertex.Normal, worldTransformation),
                         WorldCoordinates = transformator.Transform(vertex.Coordinates, worldTransformation),
                     });

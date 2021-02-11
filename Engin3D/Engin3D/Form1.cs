@@ -25,7 +25,6 @@ namespace Engin3D
         PhongLightingModel PhongLightingModel = new PhongLightingModel();
         Scene.Scene scene = new Scene.Scene();
         Shading shading = Shading.CONSTANT;
-        Camera.Camera camera;
         Camera.CameraSettings settings;
         Screen.Screen screen;
         public Form1()
@@ -42,7 +41,7 @@ namespace Engin3D
             };
             scene.CamerasOrientation.Add(new Scene.CameraOrientation
             {
-                Position = new Vector3D(0, 3, 3),
+                Position = new Vector3D(0, 0, 3),
                 Targer = new Vector3D(0, 0, 0),
                 CameraSettings = settings
             });
@@ -263,7 +262,20 @@ namespace Engin3D
                 newMesh.Rotation = new Vector3D(0, 0, 0);
                 newMesh.Position = new Vector3D(0, 0, 0);
                 scene.Meshes.Clear();
-                scene.AddMesh(newMesh);  
+                scene.AddMesh(newMesh);
+                scene.CamerasOrientation.Clear();
+                scene.Reflectors.Clear();
+                scene.CamerasOrientation.Add(new Scene.CameraOrientation
+                {
+                    CameraSettings = settings,
+                    Position = new Vector3D(0,3,3),
+                    Targer = new Vector3D(0,0,0)
+                });
+                using (Graphics graphics = Graphics.FromImage(PictureBox.Image))
+                {
+                    graphics.Clear(Color.White);
+
+                }
                 Device.Device.Render(scene, screen, shading, PhongLightingModel);
                 PictureBox.Refresh();
             }
@@ -276,7 +288,18 @@ namespace Engin3D
                 graphics.Clear(Color.White);
 
             }
-            scene.Meshes[0].Position = new Vector3D(0, 0, ((float)((TrackBar)sender).Value / 45));
+            scene.Reflectors.Clear();
+            scene.Reflectors.Add(new Scene.ReflectorOrientation
+            {
+                Reflector = new Reflector
+                {
+                    Position = new Vector3D(0, 3, 0),
+                    Target = new Vector3D(0, ((float)((TrackBar)sender).Value / 10), 0),
+                },
+                StickPositionToMesh = 9,
+                StickTargetToMesh = 9,
+            });
+            // scene.Meshes[0].Vertices[0].Coordinates = new Vector3D(-1, ((float)((TrackBar)sender).Value / 20), -1);
             //scene.Meshes[0].Rotation = new Vector3D((float)(((TrackBar)sender).Value * Math.PI / 180), scene.Meshes[0].Rotation.Y, scene.Meshes[0].Rotation.Z);
             Device.Device.Render(scene, screen, shading, PhongLightingModel);
             PictureBox.Refresh();
@@ -362,27 +385,42 @@ namespace Engin3D
         float rotX = 0;
         private void ActionButton_Click(object sender, EventArgs e)
         {
-            /*using (Graphics graphics = Graphics.FromImage(PictureBox.Image))
+            scene.Reflectors.Add(new Scene.ReflectorOrientation
             {
-                graphics.Clear(Color.White);
-
-            }
-            rotX += 90;
-            rotX %= 360;
-            scene.Meshes[9].Rotation = new Vector3D((float)(rotX * Math.PI / 180), scene.Meshes[0].Rotation.Y, scene.Meshes[0].Rotation.Z);
-            Device.Device.Render(scene, screen, shading);
-            PictureBox.Refresh();*/
-            scene.Meshes[0].Color = Color.Gray;
+                Reflector = new Reflector
+                {
+                    Position = new Vector3D(0, 3, 0),
+                    Target = new Vector3D(0, 3, 0),
+                },
+                StickPositionToMesh = 9,
+                StickTargetToMesh = 9,
+            });
+            /*scene.Reflectors.Add(new Scene.ReflectorOrientation
+            {
+                Reflector = new Reflector
+                {
+                    Position = new Vector3D(2, 0, 0),
+                    Target = new Vector3D(0, 0, 0),
+                },
+            });*/
+            scene.PointLights.Add(new Scene.PointLightOrientation
+            {
+                PointLight = new PointLight
+                {
+                    Position = new Vector3D(-10, 10, 10)
+                }
+            });
+            /*scene.Meshes[0].Color = Color.Gray;
             scene.Meshes[1].Color = Color.Purple;
             scene.Meshes[2].Color = Color.Blue;
             scene.Meshes[3].Color = Color.Yellow;
-            scene.Meshes[4].Color = Color.White;
-            scene.Meshes[5].Color = Color.Black;
-            scene.Meshes[6].Color = Color.DarkGray;
+            scene.Meshes[4].Color = Color.Green;
+            scene.Meshes[5].Color = Color.Orange;
+            scene.Meshes[6].Color = Color.Brown;
             scene.Meshes[7].Color = Color.LightGray;
             scene.Meshes[8].Color = Color.Gold;
             scene.Meshes[9].Color = Color.Red;
-            scene.Meshes[10].Color = Color.LightBlue;
+            scene.Meshes[10].Color = Color.LightBlue;*/
         }
 
         private void StaticRadioButton_CheckedChanged(object sender, EventArgs e)

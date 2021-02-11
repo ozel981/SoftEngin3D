@@ -66,7 +66,7 @@ namespace Engin3D.Mesh
 
         public static implicit operator Vector3D(Color color)
         {
-            return new Vector3D(color.R, color.G, color.G);
+            return new Vector3D(color.R, color.G, color.B);
         }
 
         public static implicit operator Color(Vector3D vector)

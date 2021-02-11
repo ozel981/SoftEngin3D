@@ -16,9 +16,8 @@ namespace Engin3D.Lighting
     public abstract class Shader : IShader
     {
         protected PhongLightingModel PhongLightingModel;
-        protected List<LightModeler> LightModelers;
-        public Vector3D lightPos = new Vector3D(50, -50, 0);
-        public Shader(PhongLightingModel phongLightingModel, List<LightModeler> lightModelers)
+        protected List<ILightModeler> LightModelers;
+        public Shader(PhongLightingModel phongLightingModel, List<ILightModeler> lightModelers)
         {
             PhongLightingModel = phongLightingModel;
             LightModelers = lightModelers;
@@ -27,8 +26,14 @@ namespace Engin3D.Lighting
         {
             Parallel.ForEach(projectedMesh.Faces, new ParallelOptions { MaxDegreeOfParallelism = 8 }, (face) =>
             {
-                ShadeFace(face, projectedMesh.Vertices, screen, new Vector3D(CemeraPosition.Z, CemeraPosition.X, CemeraPosition.Y), 
-                    projectedMesh.Color);
+                Vector3D FaceCenter = (projectedMesh.Vertices[face.A].WorldCoordinates + projectedMesh.Vertices[face.B].WorldCoordinates + projectedMesh.Vertices[face.C].WorldCoordinates) / 3;
+                Vector3D VectorToCamera = CemeraPosition - FaceCenter;
+                double x = Vector3D.DotProduct(VectorToCamera, face.Vector);
+                if(x >= 0)
+                {
+                    ShadeFace(face, projectedMesh.Vertices, screen, CemeraPosition,
+                        projectedMesh.Color);
+                }
             });
         }
 
@@ -73,7 +78,7 @@ namespace Engin3D.Lighting
 
     public class NoShader : Shader
     {
-        public NoShader(PhongLightingModel phongLightingModel, List<LightModeler> lightModelers) : base(phongLightingModel, lightModelers) { }
+        public NoShader(PhongLightingModel phongLightingModel, List<ILightModeler> lightModelers) : base(phongLightingModel, lightModelers) { }
         protected override void ShadeFace(Face face, List<Vertex> vertices, 
             Screen.Screen screen, Vector3D CemeraPosition, Color color)
         {
@@ -84,7 +89,7 @@ namespace Engin3D.Lighting
     }
     public class ConstantShader : Shader
     {
-        public ConstantShader(PhongLightingModel phongLightingModel, List<LightModeler> lightModelers) : base(phongLightingModel, lightModelers) { }
+        public ConstantShader(PhongLightingModel phongLightingModel, List<ILightModeler> lightModelers) : base(phongLightingModel, lightModelers) { }
         protected override void ShadeFace(Face face, List<Vertex> vertices,
             Screen.Screen screen, Vector3D CemeraPosition, Color color)
         {
@@ -104,7 +109,7 @@ namespace Engin3D.Lighting
     public class GouraudShader : Shader
     {
         protected List<Color> PointColors;
-        public GouraudShader(PhongLightingModel phongLightingModel, List<LightModeler> lightModelers, Device.ProjectedMesh projectedMesh, Vector3D CameraPosition)
+        public GouraudShader(PhongLightingModel phongLightingModel, List<ILightModeler> lightModelers, Device.ProjectedMesh projectedMesh, Vector3D CameraPosition)
             : base(phongLightingModel, lightModelers) 
         {
             PointColors = new List<Color>();
@@ -115,7 +120,7 @@ namespace Engin3D.Lighting
             }
         }
         protected override void ShadeFace(Face face, List<Vertex> vertices,
-            Screen.Screen screen, Vector3D CemeraPosition, Color color)
+            Screen.Screen screen, Vector3D CemeraPositionCemeraPosition, Color color)
         {
             screen.FillTriangle(vertices[face.A], vertices[face.B], vertices[face.C],
                 (p, a, b, c) =>
@@ -128,7 +133,7 @@ namespace Engin3D.Lighting
 
     public class PhongShader : Shader
     {
-        public PhongShader(PhongLightingModel phongLightingModel, List<LightModeler> lightModelers) : base(phongLightingModel, lightModelers) { }
+        public PhongShader(PhongLightingModel phongLightingModel, List<ILightModeler> lightModelers) : base(phongLightingModel, lightModelers) { }
         protected override void ShadeFace(Face face, List<Vertex> vertices,
             Screen.Screen screen, Vector3D CemeraPosition, Color color)
         {
