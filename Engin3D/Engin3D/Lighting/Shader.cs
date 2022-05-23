@@ -26,14 +26,8 @@ namespace Engin3D.Lighting
         {
             Parallel.ForEach(projectedMesh.Faces, new ParallelOptions { MaxDegreeOfParallelism = 8 }, (face) =>
             {
-                Vector3D FaceCenter = (projectedMesh.Vertices[face.A].WorldCoordinates + projectedMesh.Vertices[face.B].WorldCoordinates + projectedMesh.Vertices[face.C].WorldCoordinates) / 3;
-                Vector3D VectorToCamera = CemeraPosition - FaceCenter;
-                double x = Vector3D.DotProduct(VectorToCamera, face.Vector);
-                if(x >= 0)
-                {
                     ShadeFace(face, projectedMesh.Vertices, screen, CemeraPosition,
                         projectedMesh.Color);
-                }
             });
         }
 

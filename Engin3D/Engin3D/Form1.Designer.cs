@@ -37,7 +37,6 @@
             this.StaticRadioButton = new System.Windows.Forms.RadioButton();
             this.FollowRadioButton = new System.Windows.Forms.RadioButton();
             this.StickRadioButton = new System.Windows.Forms.RadioButton();
-            this.trackBar2 = new System.Windows.Forms.TrackBar();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.ConstantRadioButton = new System.Windows.Forms.RadioButton();
@@ -47,22 +46,20 @@
             this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
             this.SaveButton = new System.Windows.Forms.Button();
             this.LoadButton = new System.Windows.Forms.Button();
-            this.ActionButton = new System.Windows.Forms.Button();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel6 = new System.Windows.Forms.TableLayoutPanel();
-            this.LoadMeshButton = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel7 = new System.Windows.Forms.TableLayoutPanel();
             this.FogCheckBox = new System.Windows.Forms.CheckBox();
-            this.Timer = new System.Windows.Forms.Timer(this.components);
             this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.trackBar2 = new System.Windows.Forms.TrackBar();
+            this.Timer = new System.Windows.Forms.Timer(this.components);
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.PictureBox)).BeginInit();
             this.tableLayoutPanel2.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.tableLayoutPanel5.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBar2)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -72,6 +69,7 @@
             this.groupBox5.SuspendLayout();
             this.tableLayoutPanel7.SuspendLayout();
             this.groupBox6.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBar2)).BeginInit();
             this.SuspendLayout();
             // 
             // tableLayoutPanel1
@@ -189,18 +187,6 @@
             this.StickRadioButton.UseVisualStyleBackColor = true;
             this.StickRadioButton.CheckedChanged += new System.EventHandler(this.StickRadioButton_CheckedChanged);
             // 
-            // trackBar2
-            // 
-            this.trackBar2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.trackBar2.Location = new System.Drawing.Point(3, 16);
-            this.trackBar2.Maximum = 130;
-            this.trackBar2.Minimum = 30;
-            this.trackBar2.Name = "trackBar2";
-            this.trackBar2.Size = new System.Drawing.Size(222, 30);
-            this.trackBar2.TabIndex = 4;
-            this.trackBar2.Value = 30;
-            this.trackBar2.Scroll += new System.EventHandler(this.trackBar2_Scroll);
-            // 
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.tableLayoutPanel3);
@@ -286,7 +272,6 @@
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
             this.tableLayoutPanel4.Controls.Add(this.SaveButton, 0, 0);
             this.tableLayoutPanel4.Controls.Add(this.LoadButton, 1, 0);
-            this.tableLayoutPanel4.Controls.Add(this.ActionButton, 2, 0);
             this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel4.Location = new System.Drawing.Point(3, 16);
             this.tableLayoutPanel4.Name = "tableLayoutPanel4";
@@ -318,16 +303,6 @@
             this.LoadButton.UseVisualStyleBackColor = true;
             this.LoadButton.Click += new System.EventHandler(this.LoadButton_Click);
             // 
-            // ActionButton
-            // 
-            this.ActionButton.Location = new System.Drawing.Point(151, 3);
-            this.ActionButton.Name = "ActionButton";
-            this.ActionButton.Size = new System.Drawing.Size(68, 23);
-            this.ActionButton.TabIndex = 2;
-            this.ActionButton.Text = "Action";
-            this.ActionButton.UseVisualStyleBackColor = true;
-            this.ActionButton.Click += new System.EventHandler(this.ActionButton_Click);
-            // 
             // groupBox4
             // 
             this.groupBox4.Controls.Add(this.tableLayoutPanel6);
@@ -345,8 +320,7 @@
             this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
             this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
             this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
-            this.tableLayoutPanel6.Controls.Add(this.LoadMeshButton, 0, 0);
-            this.tableLayoutPanel6.Controls.Add(this.button2, 1, 0);
+            this.tableLayoutPanel6.Controls.Add(this.button2, 0, 0);
             this.tableLayoutPanel6.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel6.Location = new System.Drawing.Point(3, 16);
             this.tableLayoutPanel6.Name = "tableLayoutPanel6";
@@ -355,19 +329,9 @@
             this.tableLayoutPanel6.Size = new System.Drawing.Size(222, 30);
             this.tableLayoutPanel6.TabIndex = 0;
             // 
-            // LoadMeshButton
-            // 
-            this.LoadMeshButton.Location = new System.Drawing.Point(3, 3);
-            this.LoadMeshButton.Name = "LoadMeshButton";
-            this.LoadMeshButton.Size = new System.Drawing.Size(68, 23);
-            this.LoadMeshButton.TabIndex = 1;
-            this.LoadMeshButton.Text = "Load mesh";
-            this.LoadMeshButton.UseVisualStyleBackColor = true;
-            this.LoadMeshButton.Click += new System.EventHandler(this.LoadMeshButton_Click);
-            // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(77, 3);
+            this.button2.Location = new System.Drawing.Point(3, 3);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(68, 23);
             this.button2.TabIndex = 5;
@@ -413,11 +377,6 @@
             this.FogCheckBox.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.FogCheckBox.UseVisualStyleBackColor = true;
             // 
-            // Timer
-            // 
-            this.Timer.Interval = 10;
-            this.Timer.Tick += new System.EventHandler(this.Timer_Tick);
-            // 
             // groupBox6
             // 
             this.groupBox6.Controls.Add(this.trackBar2);
@@ -428,6 +387,22 @@
             this.groupBox6.TabIndex = 11;
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "Height Reflector Target Point";
+            // 
+            // trackBar2
+            // 
+            this.trackBar2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.trackBar2.Location = new System.Drawing.Point(3, 16);
+            this.trackBar2.Maximum = 130;
+            this.trackBar2.Minimum = 30;
+            this.trackBar2.Name = "trackBar2";
+            this.trackBar2.Size = new System.Drawing.Size(222, 30);
+            this.trackBar2.TabIndex = 4;
+            this.trackBar2.Value = 30;
+            this.trackBar2.Scroll += new System.EventHandler(this.trackBar2_Scroll);
+            // 
+            // Timer
+            // 
+            this.Timer.Tick += new System.EventHandler(this.Timer_Tick);
             // 
             // Form1
             // 
@@ -443,7 +418,6 @@
             this.groupBox3.ResumeLayout(false);
             this.tableLayoutPanel5.ResumeLayout(false);
             this.tableLayoutPanel5.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBar2)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.tableLayoutPanel3.ResumeLayout(false);
             this.tableLayoutPanel3.PerformLayout();
@@ -456,6 +430,7 @@
             this.tableLayoutPanel7.PerformLayout();
             this.groupBox6.ResumeLayout(false);
             this.groupBox6.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBar2)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -466,7 +441,6 @@
         private System.Windows.Forms.PictureBox PictureBox;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
         private System.Windows.Forms.Timer Timer;
-        private System.Windows.Forms.Button LoadMeshButton;
         private System.Windows.Forms.TrackBar trackBar2;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.GroupBox groupBox1;
@@ -478,7 +452,6 @@
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
         private System.Windows.Forms.Button SaveButton;
         private System.Windows.Forms.Button LoadButton;
-        private System.Windows.Forms.Button ActionButton;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel5;
         private System.Windows.Forms.RadioButton StaticRadioButton;

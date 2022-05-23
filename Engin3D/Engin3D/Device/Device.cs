@@ -1,6 +1,7 @@
 ﻿using Engin3D.Lighting;
 using Engin3D.Mesh;
 using Engin3D.Scene;
+using MathNet.Numerics.LinearAlgebra;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Threading.Tasks;
@@ -22,7 +23,6 @@ namespace Engin3D.Device
             Camera.Camera camera = CreateCamera(scene);
             List<ILightModeler> lightModelers = CreateLights(scene);
             Parallel.ForEach(scene.Meshes, new ParallelOptions { MaxDegreeOfParallelism = 4 }, (mesh) =>
-            //foreach (Mesh.Mesh mesh in scene.Meshes)
              {
                 RenderMesh(mesh, camera, screen,
                 shading, phongLightingModel, lightModelers);
@@ -31,23 +31,15 @@ namespace Engin3D.Device
         private static void RenderMesh(Mesh.Mesh mesh, Camera.Camera camera, Screen.Screen screen,
                 Shading shading, PhongLightingModel phongLightingModel, List<ILightModeler> lightModelers)
         {
-            List<Vertex> vertices = camera.Project(mesh);
-            List<Face> newFaces = new List<Face>();
-            foreach(Face face in mesh.Faces)
-            {
-                newFaces.Add(new Face
-                {
-                    A = face.A,
-                    B = face.B,
-                    C = face.C,
-                    Vector = TransformVector(face.Vector, new Vector3D(0, 0, 0), mesh.Rotation)
-                });
-            }
+            Vector3DTransformator transformator = new Vector3DTransformator();
+            Matrix<double> translation = transformator.CreateTranslationMatrix(mesh.Position);
+            Matrix<double> rotation = transformator.CreateRotationMatrix(mesh.Rotation);
+            var vertices = camera.Project(mesh.Vertices, translation, rotation);
             ProjectedMesh projectedMesh = new ProjectedMesh
             {
                 Color = mesh.Color,
                 Vertices = vertices,
-                Faces = newFaces.ToArray()
+                Faces = BackFaceCulling(mesh.Faces, vertices, camera.Position, rotation)
             };
             Shader shader = new NoShader(phongLightingModel, lightModelers);
             switch (shading)
@@ -66,6 +58,23 @@ namespace Engin3D.Device
                     break;
             }
             shader.ShadeFaces(projectedMesh, screen, camera.Position);
+        }
+
+        private static Face[] BackFaceCulling(Face[] faces, List<Vertex> vertices, Vector3D cameraPosition, Matrix<double> rotation)
+        {
+            Vector3DTransformator transformator = new Vector3DTransformator();
+            List<Face> newFaces = new List<Face>();
+            foreach (Face face in faces)
+            {
+                Vector3D FaceCenter = (vertices[face.A].WorldCoordinates + vertices[face.B].WorldCoordinates + vertices[face.C].WorldCoordinates) / 3;
+                Vector3D VectorToCamera = cameraPosition - FaceCenter;
+                double x = Vector3D.DotProduct(VectorToCamera, transformator.Transform(face.Vector, rotation));
+                if (x > 0)
+                {
+                    newFaces.Add(face);
+                }
+            }   
+            return newFaces.ToArray();
         }
 
         private static List<ILightModeler> CreateLights(Scene.Scene scene)

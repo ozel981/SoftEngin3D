@@ -198,8 +198,13 @@ namespace Engin3D
         private async void LoadStartMesh()
         {
             string path = Application.StartupPath;
-            path = path.Substring(0, path.Length - 17);
-            path += "Objects\\MyScene";
+            int x = path.LastIndexOf("\\");
+            path = path.Remove(path.LastIndexOf("\\"),path.Length - x);
+            x = path.LastIndexOf("\\");
+            path = path.Remove(path.LastIndexOf("\\"), path.Length - x);
+            x = path.LastIndexOf("\\");
+            path = path.Remove(path.LastIndexOf("\\"), path.Length - x);
+            path += "\\Objects\\MyScene";
             using (FileStream openStream = File.OpenRead(path))
             {
                 try
@@ -288,19 +293,14 @@ namespace Engin3D
                 graphics.Clear(Color.White);
 
             }
-            scene.Reflectors.Clear();
-            scene.Reflectors.Add(new Scene.ReflectorOrientation
+            var reflectorOrientation = scene.Reflectors[0];
+            reflectorOrientation.Reflector = new Reflector
             {
-                Reflector = new Reflector
-                {
-                    Position = new Vector3D(0, 3, 0),
-                    Target = new Vector3D(0, ((float)((TrackBar)sender).Value / 10), 0),
-                },
-                StickPositionToMesh = 9,
-                StickTargetToMesh = 9,
-            });
-            // scene.Meshes[0].Vertices[0].Coordinates = new Vector3D(-1, ((float)((TrackBar)sender).Value / 20), -1);
-            //scene.Meshes[0].Rotation = new Vector3D((float)(((TrackBar)sender).Value * Math.PI / 180), scene.Meshes[0].Rotation.Y, scene.Meshes[0].Rotation.Z);
+                Color = reflectorOrientation.Reflector.Color,
+                Position = reflectorOrientation.Reflector.Position,
+                Target = new Vector3D(0, ((float)((TrackBar)sender).Value / 10), 0)
+            };
+            scene.Reflectors[0] = reflectorOrientation;
             Device.Device.Render(scene, screen, shading, PhongLightingModel);
             PictureBox.Refresh();
         }
@@ -358,8 +358,13 @@ namespace Engin3D
             using (OpenFileDialog openFileDialog = new OpenFileDialog())
             {
                 string path = Application.StartupPath;
-                openFileDialog.InitialDirectory = path.Substring(0, path.Length - 16);
-                path += "Objects";
+                int x = path.LastIndexOf("\\");
+                path = path.Remove(path.LastIndexOf("\\"), path.Length - x);
+                x = path.LastIndexOf("\\");
+                path = path.Remove(path.LastIndexOf("\\"), path.Length - x);
+                x = path.LastIndexOf("\\");
+                path = path.Remove(path.LastIndexOf("\\"), path.Length - x);
+                path += "\\Objects\\MyScene";
                 openFileDialog.Filter = "all files (*.*)|*.*";
                 openFileDialog.FilterIndex = 2;
                 openFileDialog.RestoreDirectory = true;

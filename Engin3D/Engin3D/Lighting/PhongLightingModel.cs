@@ -26,9 +26,10 @@ namespace Engin3D.Lighting
             double B = 0;
             foreach(ILightModeler lightModeler in lightModelers)
             {
-                R += ((double)color.R / 255.0) * lightModeler.ModelLight(position, normal, CameraPosition);
-                G += ((double)color.G / 255.0) * lightModeler.ModelLight(position, normal, CameraPosition);
-                B += ((double)color.B / 255.0) * lightModeler.ModelLight(position, normal, CameraPosition);
+                Vector3D intence = lightModeler.ModelLight(position, normal, CameraPosition);
+                R += ((double)color.R / 255.0) * intence.X;
+                G += ((double)color.G / 255.0) * intence.Y;
+                B += ((double)color.B / 255.0) * intence.Z;
             }
             return Color.FromArgb(
                 Math.Max(0, Math.Min(255, (int)(255.0 * R + (Fog ? distance * 255 : 0)))),

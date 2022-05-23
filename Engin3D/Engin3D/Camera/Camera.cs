@@ -86,14 +86,14 @@ namespace Engin3D.Camera
             return DenseVector.OfArray(new double[] { x, y, z });
         }
         
-        public List<Vertex> Project(Mesh.Mesh mesh)
+        public List<Vertex> Project(Vertex[] Vertices, Matrix<double> translation, Matrix<double> rotation)
         {
             List<Vertex> points = new List<Vertex>();
             Matrix<double> transformation = projection * view;
             Vector3DTransformator transformator = new Vector3DTransformator();
-            Matrix<double> worldTransformation = transformator.CreateTranslationMatrix(mesh.Position) * transformator.CreateRotationMatrix(mesh.Rotation);
+            Matrix<double> worldTransformation = translation * rotation;
             transformation = transformation * worldTransformation;
-            foreach (Vertex vertex in mesh.Vertices)
+            foreach (Vertex vertex in Vertices)
             {
                 points.Add(
                     new Vertex
